@@ -39,3 +39,12 @@
     return originalReact(gd, data, layout, config);
   };
 })();
+
+// Optional workforce-composition module. It stays invisible until the compact
+// workforce_composition_dashboard.json dataset is present in the repository.
+(() => {
+  const script = document.createElement("script");
+  script.src = "/workforce.js";
+  script.async = true;
+  document.head.appendChild(script);
+})();
