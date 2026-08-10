@@ -1,4 +1,5 @@
 from pathlib import Path
+import gzip
 import shutil
 
 BASE = Path(__file__).resolve().parent
@@ -37,12 +38,14 @@ for name in PART_NAMES:
     else:
         raise FileNotFoundError(f"Missing dashboard data file: {name}")
 
-# Reconstruct the archived microdataset from two independently gzipped parts.
-# Concatenated gzip members are read transparently by Python/pandas.
+# Reconstruct one valid gzipped CSV. Each uploaded part contains its own CSV
+# header, so keep the header from part 1 and skip the first line of part 2.
 if not TARGET.exists():
-    with TARGET.open("wb") as dst:
-        for part in parts:
-            with part.open("rb") as src:
+    with gzip.open(TARGET, "wt", encoding="utf-8", newline="") as dst:
+        for i, part in enumerate(parts):
+            with gzip.open(part, "rt", encoding="utf-8", newline="") as src:
+                if i > 0:
+                    next(src, None)
                 shutil.copyfileobj(src, dst)
 
 missing_aux = [name for name in AUX_FILES if not (DATA / name).exists()]
