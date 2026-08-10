@@ -17,7 +17,9 @@
 
     <nav class="tabs">
       <button class="tab active" data-view="micro">Sector / ATECO5 explorer</button>
+      <button class="tab" data-view="sector">National sector profile</button>
       <button class="tab" data-view="adapt">Adaptation explorer</button>
+      <button class="tab" data-view="uncertainty">Uncertainty & robustness</button>
       <button class="tab" data-view="notes">Data notes</button>
     </nav>
 
@@ -44,6 +46,23 @@
         <label class="wide">Activity (ATECO5 / agriculture aggregate)<select id="ateco"><option value="">All activities</option></select></label>
       </div>
 
+      <div class="card map-controls">
+        <div>
+          <h3>Province display</h3>
+          <p class="hint">Exclude provinces only from the map, ranking and table. National KPIs and the P1–P4 trend remain based on the full filtered sample.</p>
+        </div>
+        <label>Province to exclude<select id="province-picker"><option value="">Select a province…</option></select></label>
+        <button id="exclude-province" class="btn">Exclude</button>
+        <button id="clear-exclusions" class="btn secondary">Show all</button>
+        <label>Colour scaling<select id="color-mode">
+          <option value="adaptive">Adaptive · 5th–95th percentile of visible provinces</option>
+          <option value="visible">Visible range · min–max</option>
+          <option value="fixed">Fixed · same scale across P1–P4 for current filters</option>
+        </select></label>
+        <div id="excluded-chips" class="chips"></div>
+        <div id="visible-note" class="hint"></div>
+      </div>
+
       <div class="kpis">
         <div class="kpi"><span>VA loss</span><strong id="kpi-va">—</strong></div>
         <div class="kpi"><span>VA loss intensity</span><strong id="kpi-vap">—</strong></div>
@@ -51,14 +70,42 @@
         <div class="kpi"><span>Worker loss intensity</span><strong id="kpi-wp">—</strong></div>
       </div>
 
-      <div class="card"><div id="map" class="plot"></div></div>
+      <div class="card">
+        <div class="card-head"><h3>Province map</h3><span id="scale-note" class="hint"></span></div>
+        <div id="map" class="plot"></div>
+      </div>
       <div class="grid2">
         <div class="card"><div id="rank" class="plot small"></div></div>
         <div class="card"><div id="trend" class="plot small"></div></div>
       </div>
       <div class="card table-card">
-        <h3>Filtered province table</h3>
+        <div class="card-head">
+          <h3>Visible province table</h3>
+          <button id="download-csv" class="btn">Download filtered CSV</button>
+        </div>
         <div class="table-wrap"><table id="province-table"></table></div>
+      </div>
+    </section>
+
+    <section id="sector" class="view hidden">
+      <div class="filters card">
+        <label>Climate period<select id="s-period"></select></label>
+        <label>Adaptation state<select id="s-scenario">
+          <option value="0">No adaptation</option>
+          <option value="50">Combined · 50% uptake</option>
+          <option value="75">Combined · 75% uptake</option>
+        </select></label>
+      </div>
+      <div class="card prose compact">
+        <p><strong>How to read this view.</strong> Loss intensity measures the share of each branch's own value added exposed to heat-related productivity loss. Contribution measures how much that branch accounts for in the national loss total. A branch can therefore be highly vulnerable without being the largest aggregate contributor, and vice versa.</p>
+      </div>
+      <div class="grid2">
+        <div class="card"><div id="sector-intensity" class="plot small"></div></div>
+        <div class="card"><div id="sector-contribution" class="plot small"></div></div>
+      </div>
+      <div class="card table-card">
+        <h3>National branch profile</h3>
+        <div class="table-wrap"><table id="sector-table"></table></div>
       </div>
     </section>
 
@@ -72,6 +119,13 @@
           <option value="combined">Combined package</option>
         </select></label>
         <label>Uptake<select id="a-uptake"></select></label>
+        <label>Colour scaling<select id="a-color-mode">
+          <option value="adaptive">Adaptive · 5th–95th percentile</option>
+          <option value="visible">Visible range · min–max</option>
+        </select></label>
+      </div>
+      <div class="card prose compact">
+        <p>Province exclusions selected in the Sector / ATECO5 explorer are also applied here, so spatial comparisons remain consistent.</p>
       </div>
       <div class="kpis">
         <div class="kpi"><span>National avoided VA</span><strong id="a-va">—</strong></div>
@@ -80,7 +134,30 @@
         <div class="kpi"><span>Avoided workers</span><strong id="a-wp">—</strong></div>
       </div>
       <div class="card"><div id="amap" class="plot"></div></div>
-      <div class="card"><div id="aint" class="plot small"></div></div>
+      <div class="grid2">
+        <div class="card"><div id="aint" class="plot small"></div></div>
+        <div class="card"><div id="best-adaptation" class="plot small"></div></div>
+      </div>
+      <div class="card prose compact">
+        <p><strong>Dominant stand-alone measure:</strong> each province is assigned the individual measure with the largest avoided value-added share at the selected uptake. This is a descriptive comparison of stand-alone measures and is not an additive decomposition of the combined package.</p>
+      </div>
+    </section>
+
+    <section id="uncertainty" class="view hidden">
+      <div class="filters card">
+        <label>Outcome<select id="u-outcome">
+          <option value="va">Value-added loss</option>
+          <option value="workers">Equivalent workers lost</option>
+        </select></label>
+        <label>Robustness period<select id="u-period"></select></label>
+      </div>
+      <div class="card prose compact">
+        <p>Percentile bands represent dispersion across climate-model chains, not statistical confidence intervals. Methodological alternatives vary the physical workability function or activity-specific outdoor exposure shares while keeping the main economic baseline fixed.</p>
+      </div>
+      <div class="grid2">
+        <div class="card"><div id="uncertainty-main" class="plot small"></div></div>
+        <div class="card"><div id="robustness-bar" class="plot small"></div></div>
+      </div>
     </section>
 
     <section id="notes" class="view hidden">
@@ -89,6 +166,9 @@
         <p>The dashboard visualises modelled annual-equivalent labour-capacity and value-added exposure. Equivalent workers lost are full-time-equivalent productive capacity, not predicted layoffs. Value-added losses are first-order accounting quantities, not causal or general-equilibrium GDP forecasts.</p>
         <p>The sector explorer contains all 821 observed non-agricultural ATECO5 activities. Agriculture, forestry and fishing is retained as a separate branch-A aggregate, consistent with the core economic model, where agriculture is not forced into the ATECO5 mapping. In the main specification it is classified as heavy physical work with full outdoor exposure.</p>
         <p>The agriculture rows shown here are reconciled from the whole-economy province totals and the complete non-agricultural ATECO5 microdata, so the “All branches” view reproduces the full-economy national totals rather than the non-agricultural subtotal.</p>
+        <p><strong>Province exclusions are visual only.</strong> They affect the province map, ranking and visible table, but do not change the national KPI totals or the P1–P4 trajectory. This avoids turning a display choice into a change in the underlying national estimate.</p>
+        <p><strong>Colour scaling.</strong> Adaptive mode clips the displayed colour range to the 5th–95th percentiles of visible province values to reduce domination by outliers. Visible-range mode uses the minimum and maximum among visible provinces. Fixed mode uses one common range across P1–P4 under the current sector/exposure filters to support direct temporal comparison.</p>
+        <p>The uncertainty view reports model-chain dispersion and methodological sensitivity. These ranges should not be interpreted as statistical confidence intervals.</p>
         <p>The interface is an exploratory companion to the archived machine-readable outputs and does not introduce additional model estimates.</p>
       </div>
     </section>
