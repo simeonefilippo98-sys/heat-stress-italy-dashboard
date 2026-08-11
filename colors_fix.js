@@ -57,3 +57,12 @@
   script.async = true;
   document.head.appendChild(script);
 })();
+
+// Multi-select economic filters. This augments the existing branch/activity
+// selectors after the main microdata have loaded, without changing national totals.
+(() => {
+  const script = document.createElement("script");
+  script.src = "/multiselect.js";
+  script.async = true;
+  document.head.appendChild(script);
+})();
