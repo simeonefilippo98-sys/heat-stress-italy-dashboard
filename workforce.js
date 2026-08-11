@@ -1,5 +1,5 @@
 (() => {
-  const DATA_URL = "/workforce_composition_dashboard.json";
+  const DATA_URL = "/workforce_composition_web.json";
   const GEO_URL = "/economic_geography_103_simplified.geojson";
 
   const ORDER = ["clerical", "light_physical", "moderate_physical", "heavy_physical"];
