@@ -41,10 +41,19 @@
 })();
 
 // Optional workforce-composition module. It stays invisible until the compact
-// workforce_composition_dashboard.json dataset is present in the repository.
+// workforce dataset is present in the repository.
 (() => {
   const script = document.createElement("script");
   script.src = "/workforce.js";
+  script.async = true;
+  document.head.appendChild(script);
+})();
+
+// Climate-hazard explorer. The loader inflates the compact module and the module
+// itself validates the 103-province / 3,296-record payload before rendering.
+(() => {
+  const script = document.createElement("script");
+  script.src = "/climate_hazard_loader.js";
   script.async = true;
   document.head.appendChild(script);
 })();
