@@ -19,7 +19,7 @@
       }
       const note = document.createElement("span");
       note.className = "hint";
-      note.textContent = "Agriculture remains available as branch A; it is not represented as a five-digit activity in this dataset.";
+      note.textContent = "821 five-digit ATECO activities observed in the ASIA-based non-agricultural panel. Agriculture remains available as branch A and is not represented as a five-digit activity in this dataset.";
       label.appendChild(note);
       label.dataset.atecoSemanticsFixed = "1";
     }
@@ -99,15 +99,39 @@
     return true;
   }
 
+  function addTransparencyNote() {
+    if (document.getElementById("ateco-coverage-transparency-note")) return true;
+
+    const notes = document.querySelector("#notes .prose");
+    if (!notes) return false;
+
+    const p = document.createElement("p");
+    p.id = "ateco-coverage-transparency-note";
+    p.innerHTML = '<strong>ATECO coverage and agriculture.</strong> The detailed activity layer contains 821 five-digit ATECO activities actually observed in the ASIA-based non-agricultural economic panel; it is not intended to reproduce the full universe of five-digit ATECO categories. Agriculture is modelled separately as branch A because the project does not have a province-by-ATECO5 agricultural employment and value-added source that is conceptually comparable to the non-agricultural ASIA panel. The study therefore uses the conservative architecture <strong>821 observed ATECO5 activities + an aggregated agriculture branch</strong>, rather than creating unsupported agricultural ATECO5 splits through arbitrary allocation rules.';
+    notes.appendChild(p);
+
+    const methodsCards = document.querySelectorAll("#methods-citations .card");
+    const target = methodsCards.length ? methodsCards[methodsCards.length - 1] : null;
+    if (target) {
+      const m = document.createElement("p");
+      m.className = "method-note";
+      m.innerHTML = '<strong>Coverage note:</strong> the 821 ATECO5 activities are those observed in the ASIA-based non-agricultural panel. Agriculture is retained as a separate aggregate branch rather than artificially decomposed into five-digit activities without a consistent province-level employment and value-added source.';
+      target.appendChild(m);
+    }
+    return true;
+  }
+
   function boot() {
     cleanMainActivitySelect();
     patchExploreCompare();
+    addTransparencyNote();
 
     let attempts = 0;
     const timer = setInterval(() => {
       const mainReady = cleanMainActivitySelect();
       const exploreReady = patchExploreCompare() || Boolean(window.XP?.__atecoActivitySemanticsFixed);
-      if ((mainReady && exploreReady) || ++attempts > 120) clearInterval(timer);
+      const noteReady = addTransparencyNote();
+      if ((mainReady && exploreReady && noteReady) || ++attempts > 120) clearInterval(timer);
     }, 250);
   }
 
