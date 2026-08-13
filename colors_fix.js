@@ -76,3 +76,14 @@
   script.async = true;
   document.head.appendChild(script);
 })();
+
+// Semantic fix for the detailed-activity layer: A-AGG is an agriculture branch
+// aggregate used for full-economy reconciliation, not an ATECO5 activity. The
+// helper keeps it in branch A and national totals while removing it from every
+// selector or chart explicitly labelled as an activity view.
+(() => {
+  const script = document.createElement("script");
+  script.src = "/activity_semantics_fix.js";
+  script.async = true;
+  document.head.appendChild(script);
+})();
