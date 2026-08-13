@@ -1,0 +1,1 @@
+(()=>{const files=["/explore_compare_core.js","/explore_compare_profile.js","/explore_compare_compare.js","/explore_compare_boot.js"];let i=0;const next=()=>{if(i>=files.length)return;const s=document.createElement("script");s.src=files[i++];s.onload=next;s.onerror=()=>console.error("Explore & Compare module failed",s.src);document.head.appendChild(s);};next();})();
