@@ -2,6 +2,8 @@
 
 Interactive companion dashboard for the study *Heat stress, labour productivity and value-added losses across Italian provinces: climate uncertainty, occupational heterogeneity and adaptation*.
 
+**Created and maintained by Filippo Simeone.**
+
 Live explorer: https://heat-stress-italy-dashboard.vercel.app
 
 ## Scope
@@ -20,11 +22,29 @@ The dashboard exposes the same validated outputs used by the manuscript and Supp
 
 The interface does not introduce additional model estimates beyond the documented analytical pipeline. Equivalent workers lost represent annual-equivalent productive capacity, not predicted layoffs. Value-added losses are first-order accounting exposures, not causal or general-equilibrium GDP forecasts.
 
+## Scientific provenance
+
+The live dashboard includes a **Methods & citations** view that reports the main formulas and distinguishes among literature-derived relationships, literature-informed implementations and study-specific scenario/accounting choices.
+
+Key references include:
+
+- Stull, R. (2011), *Wet-Bulb Temperature from Relative Humidity and Air Temperature*, Journal of Applied Meteorology and Climatology 50(11), 2267–2269. DOI: 10.1175/JAMC-D-11-0143.1.
+- Pilcher, J.J., Nadler, E. & Busch, C. (2002), *Effects of hot and cold temperature exposure on performance: a meta-analytic review*, Ergonomics 45(10), 682–698. DOI: 10.1080/00140130210158419.
+- NIOSH (2016), *Criteria for a Recommended Standard: Occupational Exposure to Heat and Hot Environments*, DHHS (NIOSH) Publication 2016-106.
+- ISO 7243:2017, *Ergonomics of the thermal environment — Assessment of heat stress using the WBGT index*.
+- Szewczyk, W., Mongelli, I. & Ciscar, J.-C. (2021), *Heat stress, labour productivity and adaptation in Europe—a regional and occupational analysis*, Environmental Research Letters 16, 105002. DOI: 10.1088/1748-9326/ac24cf.
+
+The project-specific direct-sun proxy (`WBGT_sun = WBGT_shade + 3°C`), ATECO5 outdoor-share mapping, mixed-exposure weighting, annual-equivalent accounting and stylised adaptation uptake scenarios are explicitly labelled as modelling choices rather than presented as universal empirical constants.
+
 ## Explore & Compare
 
 The Explore & Compare view provides province profiles, P1–P4 comparison of up to six provinces, branches or activities, accounting decompositions of provincial losses, scenario-delta charts, and deterministic descriptive summaries. These summaries are generated from the validated outputs and should not be interpreted causally.
 
-## Citation
+## Working-paper citation
+
+> Simeone, F. (2026). *Heat stress, labour productivity and value-added losses across Italian provinces: climate uncertainty, occupational heterogeneity and adaptation*. Working manuscript, August 2026.
+
+## Dashboard citation
 
 For manuscript submission, the live dashboard should be cited together with a frozen archived release of this repository. The planned citation form is:
 
