@@ -59,7 +59,6 @@
       ensureAllState(select);
     }
 
-    // Replace the core filtering rule with union semantics for selected branches/activities.
     selectedRows = function(periodOverride=null) {
       const p = periodOverride || document.getElementById("period").value;
       const bs = vals(document.getElementById("branch"));
@@ -75,7 +74,6 @@
       );
     };
 
-    // Rebuild Activity from the UNION of all selected branches, not only the first branch.
     rebuildAteco = function() {
       const current = new Set(vals(ateco));
       const p = document.getElementById("period").value;
@@ -106,7 +104,6 @@
     enhance(branch, 5, "Economic branch");
     enhance(ateco, 7, "Activity");
 
-    // Original listeners may render once; these listeners run after them and enforce the multi-state.
     branch.addEventListener("change", () => {
       ensureAllState(branch);
       rebuildAteco();
@@ -117,7 +114,6 @@
       renderMicro();
     });
 
-    // Intensity/exposure/period changes must preserve the multi-branch union while refreshing activities.
     ["period","intensity","exposure"].forEach(id => {
       document.getElementById(id)?.addEventListener("change", () => {
         setTimeout(() => { rebuildAteco(); renderMicro(); }, 0);
@@ -131,4 +127,11 @@
       aggregation: "sum VA/workers/losses first, then recompute intensity"
     });
   }
+})();
+
+(() => {
+  const script = document.createElement("script");
+  script.src = "/explore_compare_loader.js";
+  script.async = true;
+  document.head.appendChild(script);
 })();
