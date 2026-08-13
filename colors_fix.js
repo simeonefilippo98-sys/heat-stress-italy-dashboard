@@ -66,3 +66,13 @@
   script.async = true;
   document.head.appendChild(script);
 })();
+
+// Scientific provenance, paper citation and dashboard authorship. This module is
+// presentation-only: it documents the exact formulas and references used by the
+// study and does not alter any analytical output.
+(() => {
+  const script = document.createElement("script");
+  script.src = "/methods_citations.js";
+  script.async = true;
+  document.head.appendChild(script);
+})();
