@@ -87,3 +87,14 @@
   script.async = true;
   document.head.appendChild(script);
 })();
+
+// Linked scientific chart interactions. Existing validated outputs are reused:
+// period points become navigation controls, the uncertainty plot exposes an
+// interactive P05–P95 band, and robustness bars open a methodological inspector.
+// No new model estimates are introduced.
+(() => {
+  const script = document.createElement("script");
+  script.src = "/linked_chart_interactions.js";
+  script.async = true;
+  document.head.appendChild(script);
+})();
