@@ -98,3 +98,14 @@
   script.async = true;
   document.head.appendChild(script);
 })();
+
+// Scenario Lab: A/B comparisons across validated combinations only. The detailed
+// entity layer uses the main ISO outputs and archived adaptation states; alternative
+// methodological sensitivities remain national and no-adaptation, matching the
+// resolution of the robustness archive.
+(() => {
+  const script = document.createElement("script");
+  script.src = "/scenario_lab.js";
+  script.async = true;
+  document.head.appendChild(script);
+})();
