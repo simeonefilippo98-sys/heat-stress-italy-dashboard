@@ -40,8 +40,6 @@
   };
 })();
 
-// Optional workforce-composition module. It stays invisible until the compact
-// workforce dataset is present in the repository.
 (() => {
   const script = document.createElement("script");
   script.src = "/workforce.js";
@@ -49,8 +47,6 @@
   document.head.appendChild(script);
 })();
 
-// Climate-hazard explorer. The loader inflates the compact module and the module
-// itself validates the 103-province / 3,296-record payload before rendering.
 (() => {
   const script = document.createElement("script");
   script.src = "/climate_hazard_loader.js";
@@ -58,8 +54,6 @@
   document.head.appendChild(script);
 })();
 
-// Multi-select economic filters. This augments the existing branch/activity
-// selectors after the main microdata have loaded, without changing national totals.
 (() => {
   const script = document.createElement("script");
   script.src = "/multiselect.js";
@@ -67,9 +61,6 @@
   document.head.appendChild(script);
 })();
 
-// Scientific provenance, paper citation and dashboard authorship. This module is
-// presentation-only: it documents the exact formulas and references used by the
-// study and does not alter any analytical output.
 (() => {
   const script = document.createElement("script");
   script.src = "/methods_citations.js";
@@ -77,10 +68,6 @@
   document.head.appendChild(script);
 })();
 
-// Semantic fix for the detailed-activity layer: A-AGG is an agriculture branch
-// aggregate used for full-economy reconciliation, not an ATECO5 activity. The
-// helper keeps it in branch A and national totals while removing it from every
-// selector or chart explicitly labelled as an activity view.
 (() => {
   const script = document.createElement("script");
   script.src = "/activity_semantics_fix.js";
@@ -88,10 +75,6 @@
   document.head.appendChild(script);
 })();
 
-// Linked scientific chart interactions. Existing validated outputs are reused:
-// period points become navigation controls, the uncertainty plot exposes an
-// interactive P05–P95 band, and robustness bars open a methodological inspector.
-// No new model estimates are introduced.
 (() => {
   const script = document.createElement("script");
   script.src = "/linked_chart_interactions.js";
@@ -99,13 +82,18 @@
   document.head.appendChild(script);
 })();
 
-// Scenario Lab: A/B comparisons across validated combinations only. The detailed
-// entity layer uses the main ISO outputs and archived adaptation states; alternative
-// methodological sensitivities remain national and no-adaptation, matching the
-// resolution of the robustness archive.
+// Scenario Lab compares only combinations represented in the archived outputs.
 (() => {
   const script = document.createElement("script");
   script.src = "/scenario_lab.js";
+  script.async = true;
+  document.head.appendChild(script);
+})();
+
+// Keep national uncertainty reporting tied to the authoritative robustness archive.
+(() => {
+  const script = document.createElement("script");
+  script.src = "/scenario_lab_precision_fix.js";
   script.async = true;
   document.head.appendChild(script);
 })();
