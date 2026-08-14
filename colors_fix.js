@@ -81,19 +81,3 @@
   script.async = true;
   document.head.appendChild(script);
 })();
-
-// Scenario Lab compares only combinations represented in the archived outputs.
-(() => {
-  const script = document.createElement("script");
-  script.src = "/scenario_lab.js";
-  script.async = true;
-  document.head.appendChild(script);
-})();
-
-// Keep national uncertainty reporting tied to the authoritative robustness archive.
-(() => {
-  const script = document.createElement("script");
-  script.src = "/scenario_lab_precision_fix.js";
-  script.async = true;
-  document.head.appendChild(script);
-})();
