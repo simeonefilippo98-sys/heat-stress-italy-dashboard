@@ -49,6 +49,8 @@ The Explore & Compare view provides province profiles, P1–P4 comparison of up 
 
 The **Scenario Lab** compares two validated model states side by side. For the main ISO specification it can compare Italy, individual provinces, economic branches and observed ATECO5 activities across P1–P4 and the archived no-adaptation / Combined 50% / Combined 75% states. It reports Scenario A, Scenario B, the absolute and relative B−A change, P1–P4 trajectories under the two selected definitions, and an accounting decomposition of the largest drivers of the difference.
 
+The Scenario Lab uses a **lazy, lightweight architecture**: only a tiny launcher is loaded with the main dashboard; the comparison module is fetched on first click and builds compact cached indices once, in small idle-time chunks. Subsequent interactions reuse those indices rather than repeatedly scanning the full province–ATECO5 microdata. Province-by-activity driver decomposition is intentionally left to Explore & Compare so that Scenario Lab does not reintroduce a heavy full-microdata computation.
+
 Alternative NIOSH, Hothaps and low/high outdoor-share sensitivities are deliberately restricted to national, no-adaptation comparisons because that is the resolution at which the robustness outputs are archived. The Scenario Lab does not interpolate uncomputed combinations. Agriculture remains available as aggregate branch A and is not represented as a five-digit activity.
 
 ## Working-paper citation
