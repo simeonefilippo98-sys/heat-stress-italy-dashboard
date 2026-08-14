@@ -18,7 +18,7 @@ The dashboard exposes the same validated outputs used by the manuscript and Supp
 - stylised adaptation scenarios;
 - climate-model uncertainty and methodological robustness;
 - observed 2018–2023 workforce composition and the CEDEFOP-based 2035 composition-only scenario;
-- province profiles, multi-entity comparisons and scenario deltas through the Explore & Compare view;
+- province research profiles, multi-entity comparisons and scenario deltas through the Explore & Compare view;
 - validated A/B comparisons through the Scenario Lab.
 
 The interface does not introduce additional model estimates beyond the documented analytical pipeline. Equivalent workers lost represent annual-equivalent productive capacity, not predicted layoffs. Value-added losses are first-order accounting exposures, not causal or general-equilibrium GDP forecasts.
@@ -43,7 +43,26 @@ Several charts also act as navigation controls. The P1–P4 trajectory can updat
 
 ## Explore & Compare
 
-The Explore & Compare view provides province profiles, P1–P4 comparison of up to six provinces, branches or activities, accounting decompositions of provincial losses, scenario-delta charts, and deterministic descriptive summaries. These summaries are generated from the validated outputs and should not be interpreted causally.
+The Explore & Compare view provides province research profiles, P1–P4 comparison of up to six provinces, branches or activities, accounting decompositions of provincial losses, scenario-delta charts, and deterministic descriptive summaries. These summaries are generated from the validated outputs and should not be interpreted causally.
+
+### Province Research Profile
+
+The **Province Research Profile** combines the main provincial evidence in one scientific profile rather than requiring the reader to move across separate charts. For the selected province, period and adaptation state it reports:
+
+- authoritative provincial value-added loss and P05–P95 climate-model dispersion;
+- value-added-loss intensity and rank among the 103 harmonised provinces;
+- equivalent workers lost and worker-loss intensity;
+- P1–P4 value-added-loss trajectory;
+- adaptive-capacity score and descriptive Just Resilience quadrant/priority context;
+- P4 direct-sun WBGT proxy and P4−P1 WBGT change;
+- observed 2023 workforce composition alongside the separately labelled CEDEFOP 2035 composition-only sensitivity;
+- no-adaptation, Combined 50% and Combined 75% adaptation outcomes;
+- the largest branch contributions to provincial value-added loss;
+- the largest detailed ATECO5 contributions, with agriculture retained only as aggregate branch A.
+
+The headline KPI values are taken from the authoritative province-level adaptation/ensemble outputs and fixed provincial economic denominators. The ATECO5 microdata are used only for the accounting decomposition of drivers. This avoids reconstructing headline provincial estimates from a detailed layer when a validated aggregate result already exists.
+
+For performance, the profile does no microdata scan while Explore & Compare is hidden. The selected province's detailed rows are cached on first use and reused thereafter; the workforce file is fetched lazily once; and only the two principal profile charts use Plotly. Buttons link the profile directly to Scenario Lab, the detailed climate-hazard view, the workforce explorer and Methods & citations.
 
 ## Scenario Lab
 
