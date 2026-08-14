@@ -81,3 +81,13 @@
   script.async = true;
   document.head.appendChild(script);
 })();
+
+// Lightweight Scenario Lab launcher only. The actual Scenario Lab code is loaded
+// on first click and then builds compact cached indices in small idle-time chunks.
+// This avoids the continuous full-microdata scans that caused high CPU usage.
+(() => {
+  const script = document.createElement("script");
+  script.src = "/scenario_lab_launcher.js";
+  script.async = true;
+  document.head.appendChild(script);
+})();
