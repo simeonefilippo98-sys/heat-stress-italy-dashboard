@@ -70,6 +70,13 @@
 
 (() => {
   const script = document.createElement("script");
+  script.src = "/paper1_rebrand.js";
+  script.async = true;
+  document.head.appendChild(script);
+})();
+
+(() => {
+  const script = document.createElement("script");
   script.src = "/activity_semantics_fix.js";
   script.async = true;
   document.head.appendChild(script);
