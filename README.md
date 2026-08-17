@@ -2,7 +2,7 @@
 
 **Primary interactive research companion to Paper 1**
 
-> Simeone, F. (2026). *Occupational heat stress and economic production in Italy: climate projections across provinces and five-digit economic activities*. Working manuscript, August 2026.
+> Simeone, F. (2026). *From climate hazard to economic exposure: occupational heat, productivity losses and adaptation across 103 Italian provinces and 821 activities*. Working manuscript, August 2026.
 
 **Created and maintained by Filippo Simeone.**
 
