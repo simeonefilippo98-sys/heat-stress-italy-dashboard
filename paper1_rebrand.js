@@ -1,6 +1,6 @@
 (() => {
   const DASHBOARD_TITLE = "Occupational Heat & Economic Exposure in Italy";
-  const PAPER_TITLE = "Occupational heat stress and economic production in Italy: climate projections across provinces and five-digit economic activities";
+  const PAPER_TITLE = "From climate hazard to economic exposure: occupational heat, productivity losses and adaptation across 103 Italian provinces and 821 activities";
   const AUTHOR = "Filippo Simeone";
   const YEAR = "2026";
 
@@ -36,6 +36,7 @@
     document.querySelectorAll(".site-footer").forEach(footer => {
       footer.innerHTML = footer.innerHTML
         .replace(/Interactive companion dashboard for <em>.*?<\/em>/i, `Interactive research companion for Paper 1, <em>${PAPER_TITLE}</em>`)
+        .replace(/Occupational heat stress and economic production in Italy: climate projections across provinces and five-digit economic activities/gi, PAPER_TITLE)
         .replace(/Heat stress, labour productivity and value-added losses across Italian provinces: climate uncertainty, occupational heterogeneity and adaptation/gi, PAPER_TITLE);
     });
   }
