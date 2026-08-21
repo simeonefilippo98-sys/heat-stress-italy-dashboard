@@ -2,7 +2,7 @@
 
 **Interactive research companion to *From climate hazard to economic exposure***
 
-> Simeone, F. (2026). *From climate hazard to economic exposure: occupational heat, productivity losses and adaptation across 103 Italian provinces and 821 activities*. Working manuscript, August 2026.
+> Simeone, F. (2026). *From climate hazard to economic exposure: occupational heat, productivity losses and adaptation across 103 harmonised Italian territorial units and 821 observed ATECO5 activities*. Working manuscript, August 2026.
 
 **Created and maintained by Filippo Simeone.**
 
@@ -10,7 +10,7 @@ Live research explorer: https://heat-stress-italy-dashboard.vercel.app
 
 ## Role in *From climate hazard to economic exposure*
 
-This dashboard is not an ancillary illustration added after the analysis. It is the principal interactive dissemination and audit layer for *From climate hazard to economic exposure: occupational heat, productivity losses and adaptation across 103 Italian provinces and 821 activities*. It exposes the same validated outputs used by the manuscript and its Supplementary Information, allowing readers to move from national climate projections to provinces, economic branches and observed five-digit ATECO activities without introducing new damage functions or interpolated model states.
+This dashboard is not an ancillary illustration added after the analysis. It is the principal interactive dissemination and audit layer for *From climate hazard to economic exposure: occupational heat, productivity losses and adaptation across 103 harmonised Italian territorial units and 821 observed ATECO5 activities*. It exposes the same validated outputs used by the manuscript and its Supplementary Information, allowing readers to move from the national climate projections to territorial units, economic branches and observed five-digit ATECO activities without introducing new damage functions or interpolated model states.
 
 The research companion supports interactive exploration of:
 
@@ -26,6 +26,8 @@ The research companion supports interactive exploration of:
 - stylised shade, space-cooling, exoskeleton and combined adaptation scenarios;
 - observed 2018-2023 workforce composition and the CEDEFOP-based 2035 composition-only sensitivity;
 - province research profiles, linked chart navigation, multi-entity comparison and validated A/B scenario analysis.
+
+Version 1.1 adds a national **At a glance** entry point, P1–P4 headline indicators, a direct map-to-province research-profile workflow, Italian/English summary navigation, shareable URL state, full-screen map controls, a persistent interpretation warning and an explicit version/reproducibility panel. Climate-hazard and workforce maps are rendered only after their analytical view becomes visible, preventing the undersized projections caused by initialising Plotly inside hidden tabs.
 
 Equivalent workers lost represent annual-equivalent productive capacity, not predicted layoffs. Value-added losses are first-order accounting exposures, not causal GDP, welfare or general-equilibrium forecasts.
 

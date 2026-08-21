@@ -1,6 +1,6 @@
 (() => {
   const DASHBOARD_TITLE = "Occupational Heat & Economic Exposure in Italy";
-  const PAPER_TITLE = "From climate hazard to economic exposure: occupational heat, productivity losses and adaptation across 103 Italian provinces and 821 activities";
+  const PAPER_TITLE = "From climate hazard to economic exposure: occupational heat, productivity losses and adaptation across 103 harmonised Italian territorial units and 821 observed ATECO5 activities";
   const PAPER_SHORT_TITLE = "From climate hazard to economic exposure";
   const AUTHOR = "Filippo Simeone";
   const YEAR = "2026";
@@ -13,7 +13,7 @@
       const h1 = header.querySelector("h1");
       const subtitle = header.querySelector("p");
       if (h1) h1.textContent = DASHBOARD_TITLE;
-      if (subtitle) subtitle.textContent = `Interactive companion to “${PAPER_SHORT_TITLE}” · climate projections · 103 harmonised economic provinces · 821 observed ATECO5 activities + agriculture aggregate · P1–P4 · adaptation & uncertainty`;
+      if (subtitle) subtitle.textContent = `Interactive companion to “${PAPER_SHORT_TITLE}” · climate projections · 103 harmonised Italian territorial units · 821 observed ATECO5 activities + agriculture aggregate · P1–P4 · adaptation & uncertainty`;
     }
 
     const meta = document.getElementById("research-meta");

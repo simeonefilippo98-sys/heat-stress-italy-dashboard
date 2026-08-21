@@ -114,7 +114,14 @@
       btn.classList.add("active");
       document.querySelectorAll(".view").forEach(x => x.classList.add("hidden"));
       section.classList.remove("hidden");
-      renderAll();
+      // Plotly's geographic fit is unreliable when a choropleth is first
+      // created inside a display:none tab.  Render only after the browser has
+      // laid out the now-visible panel so Italy fills the available canvas.
+      requestAnimationFrame(() => {
+        const map = el("wf-map");
+        if (map && map.data) Plotly.purge(map);
+        renderAll();
+      });
     });
   }
 
@@ -270,7 +277,8 @@
       if (!records.length) throw new Error("Workforce composition dataset has no records.");
       addUi();
       initControls();
-      renderAll();
+      // The panel starts hidden. Its first render is intentionally deferred to
+      // the tab activation handler above to avoid a cached world-scale map.
       console.info("Workforce composition module loaded", data.metadata || {});
     } catch (err) {
       console.error("Workforce composition module not loaded:", err);
