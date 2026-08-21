@@ -2,7 +2,7 @@
 
 **Primary interactive research companion to Paper 1**
 
-> Simeone, F. (2026). *From climate hazard to economic exposure: occupational heat, productivity losses and adaptation across 103 Italian provinces and 821 activities*. Working manuscript, August 2026.
+> Simeone, F. (2026). *From climate hazard to economic exposure: occupational heat, productivity losses and adaptation across 103 harmonised Italian territorial units and 821 activities*. Working manuscript, August 2026.
 
 **Created and maintained by Filippo Simeone.**
 
@@ -65,4 +65,4 @@ The archived release will constitute the version of record; the Vercel deploymen
 
 ## Relationship to Paper 2
 
-A separate paper develops the territorial climate-justice question using projected economic burden from Paper 1 as an input together with independent indicators of adaptive capacity and social vulnerability. That second paper has its own analytical design and Supplementary Information. Climate-justice results are therefore not part of the core causal or accounting claims of this Paper 1 dashboard.
+A separate paper develops the territorial climate-justice question using projected economic burden from Paper 1 as an input together with independent indicators of adaptive capacity and social vulnerability. That second paper has its own analytical design and Supplementary Information. Adaptive-capacity, HOCV, OHJPI and climate-justice classifications are therefore deliberately excluded from this Paper 1 dashboard.
