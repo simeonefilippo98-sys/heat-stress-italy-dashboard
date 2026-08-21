@@ -1,5 +1,5 @@
 (() => {
-  const DATA_URL = "/workforce_composition_web.json";
+  const DATA_URL = "/workforce_composition_web.json.gz.b64";
   const GEO_URL = "/economic_geography_103_simplified.geojson";
 
   const ORDER = ["clerical", "light_physical", "moderate_physical", "heavy_physical"];
@@ -35,6 +35,19 @@
     if (r.status === 404) return null;
     if (!r.ok) throw new Error(`${url}: ${r.status}`);
     return r.json();
+  }
+
+  async function fetchCompressedJsonBase64(url) {
+    const r = await fetch(url, {cache:"no-store"});
+    if (r.status === 404) return null;
+    if (!r.ok) throw new Error(`${url}: ${r.status}`);
+    const b64 = (await r.text()).replace(/\s+/g, "");
+    if (!b64 || b64.length % 4 !== 0) throw new Error("Workforce payload is incomplete.");
+    const bin = atob(b64);
+    const bytes = Uint8Array.from(bin, ch => ch.charCodeAt(0));
+    const ds = new DecompressionStream("gzip");
+    const jsonText = await new Response(new Blob([bytes]).stream().pipeThrough(ds)).text();
+    return JSON.parse(jsonText);
   }
 
   function roleForYear(year) {
@@ -240,7 +253,7 @@
 
   async function init() {
     try {
-      const data = await fetchOptional(DATA_URL);
+      const data = await fetchCompressedJsonBase64(DATA_URL);
       if (!data) return;
       const g = await fetchOptional(GEO_URL);
       if (!g) throw new Error("Workforce map geography is missing.");
