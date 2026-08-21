@@ -1,5 +1,5 @@
 const PERIODS = [
-  ["P1_BASELINE_2006_2025", "P1 · Baseline 2006–2025"],
+  ["P1_BASELINE_2006_2025", "P1 · Climate reference 2006–2025"],
   ["P2_NEAR_2026_2050", "P2 · Near term 2026–2050"],
   ["P3_MID_2051_2075", "P3 · Mid century 2051–2075"],
   ["P4_COMMON_2076_2099", "P4 · Far future 2076–2099"],
@@ -44,6 +44,14 @@ const fmt = (x, d = 0) => num(x).toLocaleString("en-US", {maximumFractionDigits:
 const moneyBn = x => "€" + fmt(x / 1e9, 2) + " bn";
 const pct = x => fmt(x, 2) + "%";
 const clamp0 = x => Math.abs(num(x)) < 1e-7 ? 0 : Math.max(0, num(x));
+const provinceName = x => ({
+  "LAquila":"L'Aquila",
+  "Reggio nellEmilia":"Reggio nell'Emilia",
+  "Forli Cesena":"Forlì-Cesena",
+  "Valle dAosta Vallee dAoste":"Valle d'Aosta / Vallée d'Aoste",
+  "Verbano Cusio Ossola":"Verbano-Cusio-Ossola",
+  "Massa Carrara":"Massa-Carrara"
+}[String(x)] || String(x));
 
 async function ungzipText(url) {
   const r = await fetch(url);
@@ -83,7 +91,7 @@ function safeBounds(lo, hi) {
 function compactRow(x) {
   return {
     r:String(x.REF_AREA),
-    pn:x.province_name,
+    pn:provinceName(x.province_name),
     s:String(x.sector_code).padStart(5,"0"),
     sd:x.sector_description,
     b:String(x.VA_BRANCH_11),
@@ -404,8 +412,10 @@ function renderUncertainty() {
 
 function bind() {
   document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{
+    const target = $(btn.dataset.view);
+    if (!target) return;
     document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));btn.classList.add("active");
-    document.querySelectorAll(".view").forEach(x=>x.classList.add("hidden"));$(btn.dataset.view).classList.remove("hidden");
+    document.querySelectorAll(".view").forEach(x=>x.classList.add("hidden"));target.classList.remove("hidden");
     if (btn.dataset.view==="micro") renderMicro();
     if (btn.dataset.view==="sector") renderSector();
     if (btn.dataset.view==="adapt") renderAdapt();
