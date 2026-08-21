@@ -29,6 +29,15 @@
   const el = id => document.getElementById(id);
   const n = x => Number(x || 0);
   const f = (x, d=1) => n(x).toLocaleString("en-US", {minimumFractionDigits:d, maximumFractionDigits:d});
+  const displayProvince = x => ({
+    LAquila: "L'Aquila",
+    "Reggio nellEmilia": "Reggio nell'Emilia",
+    "Forli Cesena": "Forlì-Cesena",
+    "Valle dAosta Vallee dAoste": "Valle d'Aosta/Vallée d'Aoste",
+    "Massa Carrara": "Massa-Carrara",
+    "Pesaro e Urbino": "Pesaro-Urbino",
+    "Verbano Cusio Ossola": "Verbano-Cusio-Ossola",
+  }[x] || x);
 
   async function fetchOptional(url) {
     const r = await fetch(url, {cache:"no-store"});
@@ -112,7 +121,7 @@
   function initControls() {
     const provinces = [...new Map(
       records.filter(x => x.geography_level === "province")
-        .map(x => [String(x.REF_AREA), x.province_name])
+        .map(x => [String(x.REF_AREA), displayProvince(x.province_name)])
     ).entries()].sort((a,b) => String(a[1]).localeCompare(String(b[1])));
 
     el("wf-location").innerHTML = '<option value="ITALY">Italy</option>' +
@@ -161,7 +170,7 @@
     }));
     Plotly.react("wf-stack", traces, {
       barmode:"stack",
-      title:{text:`Workforce composition · ${geography === "ITALY" ? "Italy" : rowsFor(scope, geography, 2023)[0]?.province_name || geography}`,font:{size:16}},
+      title:{text:`Workforce composition · ${geography === "ITALY" ? "Italy" : displayProvince(rowsFor(scope, geography, 2023)[0]?.province_name) || geography}`,font:{size:16}},
       yaxis:{title:"Employment share (%)",range:[0,100]},
       xaxis:{title:"Observed 2018–2023 · 2035* CEDEFOP composition scenario"},
       margin:{l:60,r:20,t:55,b:70},
@@ -211,7 +220,7 @@
       z:rows.map(x=>n(x.employment_share_pct)),
       zmin,zmax,zauto:false,
       featureidkey:"properties.REF_AREA",
-      text:rows.map(x=>x.province_name),
+      text:rows.map(x=>displayProvince(x.province_name)),
       colorscale:MAP_SCALE[intensity],
       colorbar:{title:"Employment share (%)"},
       marker:{line:{color:"#fff",width:.7}},
@@ -226,7 +235,7 @@
   function renderTable(scope, geography) {
     const years = [2018,2023,2035];
     const r = Object.fromEntries(years.map(y => [y, new Map(byIntensity(rowsFor(scope, geography, y)).map(x=>[x.work_intensity,x]))]));
-    const name = geography === "ITALY" ? "Italy" : rowsFor(scope, geography, 2023)[0]?.province_name || geography;
+    const name = geography === "ITALY" ? "Italy" : displayProvince(rowsFor(scope, geography, 2023)[0]?.province_name) || geography;
     const body = ORDER.map(k => {
       const a=n(r[2018].get(k)?.employment_share_pct), b=n(r[2023].get(k)?.employment_share_pct), c=n(r[2035].get(k)?.employment_share_pct);
       return `<tr><td>${LABEL[k]}</td><td>${f(a,2)}</td><td>${f(b,2)}</td><td>${f(b-a,2)}</td><td>${f(c,2)}</td><td>${f(c-b,2)}</td></tr>`;
