@@ -1,5 +1,5 @@
 (() => {
-  const PAPER_TITLE = "Heat stress, labour productivity and value-added losses across Italian provinces: climate uncertainty, occupational heterogeneity and adaptation";
+  const PAPER_TITLE = "From climate hazard to economic exposure: occupational heat, productivity losses and adaptation across 103 harmonised Italian territorial units and 821 activities";
   const AUTHOR = "Filippo Simeone";
   const YEAR = "2026";
 
