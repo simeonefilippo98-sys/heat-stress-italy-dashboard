@@ -3,7 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Heat Stress Italy Explorer</title>
+  <title>Occupational Heat &amp; Economic Exposure in Italy | Interactive Research Companion</title>
+  <meta name="description" content="Interactive research companion to Paper 1 on occupational heat, productivity losses and adaptation across 103 harmonised Italian territorial units and 821 observed activities." />
+  <link rel="canonical" href="https://heat-stress-italy-dashboard.vercel.app/" />
+  <meta property="og:title" content="Occupational Heat &amp; Economic Exposure in Italy" />
+  <meta property="og:description" content="Paper 1 interactive research companion: P1–P4 climate projections, provincial and activity-level economic exposure, adaptation and uncertainty." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://heat-stress-italy-dashboard.vercel.app/" />
+  <meta name="theme-color" content="#172033" />
   <link rel="stylesheet" href="/styles.css" />
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -11,16 +18,16 @@
 <body>
   <main class="shell">
     <header>
-      <h1>Heat stress, labour productivity and value-added losses across Italian provinces</h1>
-      <p>Interactive companion explorer · 103 harmonised economic provinces · 821 ATECO5 activities + agriculture aggregate · P1–P4</p>
+      <h1>Occupational Heat &amp; Economic Exposure in Italy</h1>
+      <p>Primary interactive research companion to Paper 1 · 103 harmonised Italian territorial units · 821 observed ATECO5 activities + agriculture aggregate · P1–P4 · adaptation &amp; uncertainty</p>
     </header>
 
-    <nav class="tabs">
-      <button class="tab active" data-view="micro">Sector / ATECO5 explorer</button>
-      <button class="tab" data-view="sector">National sector profile</button>
-      <button class="tab" data-view="adapt">Adaptation explorer</button>
-      <button class="tab" data-view="uncertainty">Uncertainty & robustness</button>
-      <button class="tab" data-view="notes">Data notes</button>
+    <nav class="tabs" aria-label="Primary research views">
+      <button type="button" class="tab active" data-view="micro">Sector / ATECO5 explorer</button>
+      <button type="button" class="tab" data-view="sector">National sector profile</button>
+      <button type="button" class="tab" data-view="adapt">Adaptation explorer</button>
+      <button type="button" class="tab" data-view="uncertainty">Uncertainty & robustness</button>
+      <button type="button" class="tab" data-view="notes">Data notes</button>
     </nav>
 
     <section id="loading" class="card">Loading dashboard data…</section>
@@ -43,7 +50,8 @@
         <label>Economic branch<select id="branch"><option value="">All branches</option></select></label>
         <label>Work intensity<select id="intensity"><option value="">All intensities</option></select></label>
         <label>Exposure class<select id="exposure"><option value="">All exposure classes</option></select></label>
-        <label class="wide">Activity (ATECO5 / agriculture aggregate)<select id="ateco"><option value="">All activities</option></select></label>
+        <label class="wide">Activity (ATECO5 only)<select id="ateco"><option value="">All activities</option></select></label>
+        <p class="wide baseline-note"><strong>Time references:</strong> P1 is the climate reference period (2006–2025); all monetary and employment outcomes use the fixed mean 2018–2023 economic baseline.</p>
       </div>
 
       <div class="card map-controls">
