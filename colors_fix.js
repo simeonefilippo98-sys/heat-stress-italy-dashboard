@@ -43,7 +43,7 @@
 
 (() => {
   const script = document.createElement("script");
-  script.src = "/climate_hazard_loader.js";
+  script.src = "/climate_hazard.js";
   script.async = true;
   document.head.appendChild(script);
 })();
