@@ -40,12 +40,6 @@
   };
 })();
 
-(() => {
-  const script = document.createElement("script");
-  script.src = "/workforce.js";
-  script.async = true;
-  document.head.appendChild(script);
-})();
 
 (() => {
   const script = document.createElement("script");
