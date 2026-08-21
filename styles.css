@@ -15,3 +15,10 @@
 .prose{max-width:1000px;line-height:1.6}.prose.compact{max-width:none;padding-top:12px;padding-bottom:12px}.prose.compact p{margin:0}
 @media(max-width:1100px){.map-controls{grid-template-columns:1fr 1fr}.map-controls>div:first-child,.map-controls .chips,.map-controls #visible-note{grid-column:1/-1}.map-controls .btn{align-self:end}}
 @media(max-width:900px){.shell{padding:14px}.filters{grid-template-columns:1fr}.filters .wide{grid-column:auto}.kpis{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}.plot{height:540px}.map-controls{grid-template-columns:1fr}.map-controls>*{grid-column:1!important}.card-head{align-items:flex-start;flex-direction:column}}
+
+.baseline-note{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
+.activity-search{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);margin-bottom:8px}
+.activity-search::placeholder{color:#98a2b3}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #7dd3fc;outline-offset:2px}
+.tab[aria-current="page"]{background:var(--accent);color:#fff}
+@media(max-width:900px){.tabs{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.tab{white-space:nowrap}.plot{height:500px}}
