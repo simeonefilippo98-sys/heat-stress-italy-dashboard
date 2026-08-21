@@ -39,7 +39,8 @@
     s.onload = () => {
       STATE.loading = false;
       STATE.loaded = true;
-      if (window.SLLight) window.SLLight.activate(STATE.pending);
+      const stillActive = document.getElementById(TAB_ID)?.classList.contains("active");
+      if (window.SLLight && stillActive) window.SLLight.activate(STATE.pending);
       STATE.pending = null;
     };
     s.onerror = () => {
