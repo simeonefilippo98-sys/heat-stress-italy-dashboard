@@ -33,6 +33,22 @@
       select.classList.add("multi-native");
       select.setAttribute("aria-label", `${label}; click items to combine selections`);
 
+      if (label === "Activity") {
+        const search = document.createElement("input");
+        search.type = "search";
+        search.className = "activity-search";
+        search.placeholder = "Search ATECO code or activity description…";
+        search.setAttribute("aria-label", "Search ATECO activities");
+        select.parentElement?.insertBefore(search, select);
+        search.addEventListener("input", () => {
+          const q = search.value.trim().toLocaleLowerCase("it");
+          [...select.options].forEach(option => {
+            option.hidden = Boolean(q) && option.value !== "" &&
+              !option.textContent.toLocaleLowerCase("it").includes(q);
+          });
+        });
+      }
+
       const hint = document.createElement("span");
       hint.className = "hint multi-hint";
       hint.textContent = "Click items to combine selections · click All to reset";
