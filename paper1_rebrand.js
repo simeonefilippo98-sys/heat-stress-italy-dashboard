@@ -1,6 +1,6 @@
 (() => {
   const DASHBOARD_TITLE = "Occupational Heat & Economic Exposure in Italy";
-  const PAPER_TITLE = "From climate hazard to economic exposure: occupational heat, productivity losses and adaptation across 103 Italian provinces and 821 activities";
+  const PAPER_TITLE = "From climate hazard to economic exposure: occupational heat, productivity losses and adaptation across 103 harmonised Italian territorial units and 821 activities";
   const AUTHOR = "Filippo Simeone";
   const YEAR = "2026";
 
