@@ -344,8 +344,16 @@ function rebuildUptake() {
   vals.forEach(v=>$("a-uptake").add(new Option(`${Math.round(v*100)}%`,v)));
   if (vals.includes(.5)) $("a-uptake").value=.5;
 }
+function syncAdaptationCatalogue() {
+  const selected=$("a-measure").value;
+  document.querySelectorAll("[data-adaptation-measure]").forEach(card=>{
+    const active=card.dataset.adaptationMeasure===selected;
+    card.setAttribute("aria-pressed",String(active));
+  });
+}
 function renderAdapt() {
   const p=$("a-period").value,m=$("a-measure").value,u=num($("a-uptake").value);
+  syncAdaptationCatalogue();
   const rowsAll=adaptProv.filter(x=>x.period_id===p&&x.measure===m&&Math.abs(num(x.uptake)-u)<1e-9);
   const rows=rowsAll.filter(x=>!excludedProvinces.has(String(x.REF_AREA)));
   const nat=adaptNat.find(x=>x.period_id===p&&x.measure===m&&Math.abs(num(x.uptake)-u)<1e-9);
@@ -431,6 +439,9 @@ function bind() {
   ["s-period","s-scenario"].forEach(id=>$(id).addEventListener("change",renderSector));
   ["a-period","a-measure"].forEach(id=>$(id).addEventListener("change",()=>{rebuildUptake();renderAdapt();}));
   ["a-uptake","a-color-mode"].forEach(id=>$(id).addEventListener("change",renderAdapt));
+  document.querySelectorAll("[data-adaptation-measure]").forEach(card=>card.addEventListener("click",()=>{
+    $("a-measure").value=card.dataset.adaptationMeasure;rebuildUptake();renderAdapt();
+  }));
   ["u-outcome","u-period"].forEach(id=>$(id).addEventListener("change",renderUncertainty));
 }
 

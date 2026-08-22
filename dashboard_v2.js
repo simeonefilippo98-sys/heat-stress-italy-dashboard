@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "1.1.0";
+  const VERSION = "1.1.1";
   const UPDATED = "22 August 2026";
   const PAPER_TITLE = "From climate hazard to economic exposure: occupational heat, productivity losses and adaptation across 103 harmonised Italian territorial units and 821 observed ATECO5 activities";
   const PERIOD_SHORT = ["P1", "P2", "P3", "P4"];
@@ -28,7 +28,15 @@
       pipeline:"From climate to economic exposure", pipelineNote:"The dashboard follows the same auditable sequence used by the manuscript and Supplementary Information.",
       cautionTitle:"Interpretation:", caution:"modelled annual-equivalent productive-capacity exposure under a fixed 2018–2023 economic structure. It is not a causal estimate of realised GDP loss or layoffs.",
       summaryLanguage:"Sintesi italiana", copyLink:"Copy current view", copied:"Link copied", expand:"Expand map", close:"Close map", loading:"Preparing the national overview…",
-      version:"Dashboard version", updated:"Last updated", dataset:"Analytical coverage", reproducibility:"Reproducibility", repo:"GitHub source", archive:"Zenodo archive planned"
+      version:"Dashboard version", updated:"Last updated", dataset:"Analytical coverage", reproducibility:"Reproducibility", repo:"GitHub source", archive:"Zenodo archive planned",
+      catalogKicker:"Adaptation measure catalogue", catalogTitle:"What the dashboard models — and what remains a candidate option", catalogText:"Select a modelled measure to update the results below. Candidate measures are shown for policy completeness but do not have a separate effect estimate in the current outputs.",
+      statusModelled:"Modelled in the dashboard", statusCandidate:"Candidate · not separately modelled", modelledShort:"Modelled", candidateShort:"Candidate",
+      shadeTitle:"Shade and solar protection", shadeText:"Covered work areas and solar shielding reduce direct radiant-heat exposure for outdoor activities.",
+      coolingTitle:"Space cooling", coolingText:"Air conditioning or cooled indoor environments lower thermal exposure for eligible indoor work.",
+      exoTitle:"Assistive exoskeleton", exoText:"Assistive technology is represented as a reduction in the effective metabolic load of eligible physical tasks.",
+      combinedTitle:"Combined package", combinedText:"Shade, space cooling and reduced metabolic load are applied jointly; the package is scenario-specific and non-additive.",
+      garmentsTitle:"Ventilated or cooling garments", garmentsText:"Personal cooling through ventilated jackets, phase-change garments or cooling vests is relevant, but not separately parameterised here.",
+      organisationTitle:"Work–rest and hydration protocols", organisationText:"Scheduling, recovery breaks, hydration and heat-alert procedures are important organisational measures not separately estimated in the current outputs."
     },
     it: {
       overview:"In sintesi",
@@ -44,7 +52,15 @@
       pipeline:"Dal clima all’esposizione economica", pipelineNote:"Il dashboard segue la stessa sequenza verificabile utilizzata nel manoscritto e nel Supplementary Information.",
       cautionTitle:"Interpretazione:", caution:"esposizione modellata e annuale-equivalente della capacità produttiva con struttura economica 2018–2023 fissa. Non è una stima causale della perdita di PIL realizzata né dei licenziamenti.",
       summaryLanguage:"English summary", copyLink:"Copia vista corrente", copied:"Link copiato", expand:"Ingrandisci mappa", close:"Chiudi mappa", loading:"Preparazione della panoramica nazionale…",
-      version:"Versione dashboard", updated:"Ultimo aggiornamento", dataset:"Copertura analitica", reproducibility:"Riproducibilità", repo:"Codice GitHub", archive:"Archivio Zenodo previsto"
+      version:"Versione dashboard", updated:"Ultimo aggiornamento", dataset:"Copertura analitica", reproducibility:"Riproducibilità", repo:"Codice GitHub", archive:"Archivio Zenodo previsto",
+      catalogKicker:"Catalogo delle misure di adattamento", catalogTitle:"Cosa simula il dashboard — e cosa resta un’opzione candidata", catalogText:"Seleziona una misura simulata per aggiornare i risultati sottostanti. Le opzioni candidate sono mostrate per completezza di policy, ma non dispongono di una stima d’effetto separata negli output attuali.",
+      statusModelled:"Simulato nel dashboard", statusCandidate:"Opzione candidata · non simulata separatamente", modelledShort:"Simulato", candidateShort:"Candidato",
+      shadeTitle:"Ombreggiamento e protezione solare", shadeText:"Aree di lavoro coperte e schermature solari riducono l’esposizione diretta al calore radiante nelle attività all’aperto.",
+      coolingTitle:"Raffrescamento degli ambienti", coolingText:"Climatizzazione o ambienti interni raffrescati riducono l’esposizione termica per il lavoro indoor eleggibile.",
+      exoTitle:"Esoscheletro assistivo", exoText:"La tecnologia assistiva è rappresentata come riduzione del carico metabolico effettivo nelle mansioni fisiche eleggibili.",
+      combinedTitle:"Pacchetto combinato", combinedText:"Ombreggiamento, raffrescamento e riduzione del carico metabolico sono applicati congiuntamente; il risultato è specifico dello scenario e non additivo.",
+      garmentsTitle:"Giacche ventilate o indumenti refrigeranti", garmentsText:"Il raffrescamento personale tramite giacche ventilate, materiali a cambiamento di fase o gilet refrigeranti è rilevante, ma non è parametrizzato separatamente negli output attuali.",
+      organisationTitle:"Protocolli lavoro–riposo e idratazione", organisationText:"Programmazione, pause di recupero, idratazione e procedure di allerta caldo sono importanti misure organizzative non stimate separatamente negli output attuali."
     }
   };
 
@@ -93,7 +109,10 @@
     });
     document.querySelectorAll(".view").forEach(view => view.classList.add("hidden"));
     document.getElementById(id)?.classList.remove("hidden");
-    if (id === "overview") renderOverview();
+    if (id === "overview") requestAnimationFrame(()=>{
+      const map=document.getElementById("overview-map"),trend=document.getElementById("overview-trend");
+      if(map?.data)Plotly.purge(map);if(trend?.data)Plotly.purge(trend);renderOverview();
+    });
     updateUrl(id);
     window.scrollTo({top:0,behavior:"smooth"});
   }
@@ -152,9 +171,11 @@
       "ov-kpi-va-label":t("vaLoss"),"ov-kpi-vap-label":t("vaIntensity"),"ov-kpi-workers-label":t("workers"),"ov-kpi-wp-label":t("workerIntensity"),
       "ov-kpi-va-note":t("baseline"),"ov-kpi-vap-note":t("climate"),"ov-kpi-workers-note":t("noAdapt"),"ov-kpi-wp-note":t("units"),
       "ov-takeaways-title":t("takeaways"),"ov-t1":t("t1"),"ov-t1p":t("t1p"),"ov-t2":t("t2"),"ov-t2p":t("t2p"),"ov-t3":t("t3"),"ov-t3p":t("t3p"),
-      "ov-pipeline-title":t("pipeline"),"ov-pipeline-note":t("pipelineNote")
+      "ov-pipeline-title":t("pipeline"),"ov-pipeline-note":t("pipelineNote"),
+      "adapt-catalog-kicker":t("catalogKicker"),"adapt-catalog-title":t("catalogTitle"),"adapt-catalog-text":t("catalogText")
     };
     Object.entries(values).forEach(([id,value]) => { const el=document.getElementById(id); if(el) el.textContent=value; });
+    document.querySelectorAll("[data-dashboard-copy]").forEach(el=>{const value=t(el.dataset.dashboardCopy);if(value&&el.textContent!==value)el.textContent=value;});
     const strip = document.getElementById("interpretation-strip");
     if (strip) strip.innerHTML = `<strong>${t("cautionTitle")}</strong><span>${t("caution")}</span>`;
     const lang = document.getElementById("language-toggle"); if(lang) lang.textContent=t("summaryLanguage");
@@ -279,7 +300,7 @@
     const timer=setInterval(()=>{
       addGlobalTools();installExpandButtons();enhanceFooter();translateChrome();
       if(isReady()){
-        clearInterval(timer);renderOverview();setTimeout(applyUrlState,450);console.info("Dashboard 1.1 enhancements loaded",{version:VERSION,language,paper:PAPER_TITLE});
+        clearInterval(timer);setTimeout(applyUrlState,450);console.info("Dashboard 1.1 enhancements loaded",{version:VERSION,language,paper:PAPER_TITLE});
       } else if(++attempts>240){clearInterval(timer);const section=document.getElementById("overview");if(section)section.innerHTML=`<div class="card overview-error">The national overview could not initialise. The analytical views remain available.</div>`;}
     },100);
   }

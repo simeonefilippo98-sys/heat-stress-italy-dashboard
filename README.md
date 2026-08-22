@@ -27,7 +27,7 @@ The research companion supports interactive exploration of:
 - observed 2018-2023 workforce composition and the CEDEFOP-based 2035 composition-only sensitivity;
 - province research profiles, linked chart navigation, multi-entity comparison and validated A/B scenario analysis.
 
-Version 1.1 adds a national **At a glance** entry point, P1–P4 headline indicators, a direct map-to-province research-profile workflow, Italian/English summary navigation, shareable URL state, full-screen map controls, a persistent interpretation warning and an explicit version/reproducibility panel. Climate-hazard and workforce maps are rendered only after their analytical view becomes visible, preventing the undersized projections caused by initialising Plotly inside hidden tabs.
+Version 1.1 adds a national **At a glance** entry point, P1–P4 headline indicators, a direct map-to-province research-profile workflow, Italian/English summary navigation, shareable URL state, full-screen map controls, a persistent interpretation warning and an explicit version/reproducibility panel. Version 1.1.1 also defers the overview map until its panel is visible and adds an adaptation catalogue that distinguishes the four modelled scenarios from policy-relevant candidate measures that are not separately parameterised. All choropleths are therefore sized from a visible container rather than initialised inside hidden tabs.
 
 Equivalent workers lost represent annual-equivalent productive capacity, not predicted layoffs. Value-added losses are first-order accounting exposures, not causal GDP, welfare or general-equilibrium forecasts.
 

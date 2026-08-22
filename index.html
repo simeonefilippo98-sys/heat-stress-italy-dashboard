@@ -132,6 +132,51 @@
           <option value="visible">Visible range · min–max</option>
         </select></label>
       </div>
+      <div class="card adaptation-catalog" aria-labelledby="adapt-catalog-title">
+        <div class="adaptation-catalog-head">
+          <div>
+            <span class="adaptation-kicker" id="adapt-catalog-kicker">Adaptation measure catalogue</span>
+            <h3 id="adapt-catalog-title">What the dashboard models — and what remains a candidate option</h3>
+            <p id="adapt-catalog-text">Select a modelled measure to update the results below. Candidate measures are shown for policy completeness but do not have a separate effect estimate in the current outputs.</p>
+          </div>
+          <div class="adaptation-status-legend" aria-label="Adaptation evidence status">
+            <span class="adaptation-badge modelled" data-dashboard-copy="statusModelled">Modelled in the dashboard</span>
+            <span class="adaptation-badge candidate" data-dashboard-copy="statusCandidate">Candidate · not separately modelled</span>
+          </div>
+        </div>
+        <div class="adaptation-measures-grid">
+          <button class="adaptation-measure-card" type="button" data-adaptation-measure="shade" aria-pressed="false">
+            <span class="adaptation-card-top"><span class="adaptation-symbol">SH</span><span class="adaptation-badge modelled" data-dashboard-copy="modelledShort">Modelled</span></span>
+            <strong data-dashboard-copy="shadeTitle">Shade and solar protection</strong>
+            <span data-dashboard-copy="shadeText">Covered work areas and solar shielding reduce direct radiant-heat exposure for outdoor activities.</span>
+          </button>
+          <button class="adaptation-measure-card" type="button" data-adaptation-measure="space_cooling" aria-pressed="false">
+            <span class="adaptation-card-top"><span class="adaptation-symbol">AC</span><span class="adaptation-badge modelled" data-dashboard-copy="modelledShort">Modelled</span></span>
+            <strong data-dashboard-copy="coolingTitle">Space cooling</strong>
+            <span data-dashboard-copy="coolingText">Air conditioning or cooled indoor environments lower thermal exposure for eligible indoor work.</span>
+          </button>
+          <button class="adaptation-measure-card" type="button" data-adaptation-measure="exoskeleton" aria-pressed="false">
+            <span class="adaptation-card-top"><span class="adaptation-symbol">EX</span><span class="adaptation-badge modelled" data-dashboard-copy="modelledShort">Modelled</span></span>
+            <strong data-dashboard-copy="exoTitle">Assistive exoskeleton</strong>
+            <span data-dashboard-copy="exoText">Assistive technology is represented as a reduction in the effective metabolic load of eligible physical tasks.</span>
+          </button>
+          <button class="adaptation-measure-card" type="button" data-adaptation-measure="combined" aria-pressed="false">
+            <span class="adaptation-card-top"><span class="adaptation-symbol">CO</span><span class="adaptation-badge modelled" data-dashboard-copy="modelledShort">Modelled</span></span>
+            <strong data-dashboard-copy="combinedTitle">Combined package</strong>
+            <span data-dashboard-copy="combinedText">Shade, space cooling and reduced metabolic load are applied jointly; the package is scenario-specific and non-additive.</span>
+          </button>
+          <article class="adaptation-measure-card candidate-card">
+            <span class="adaptation-card-top"><span class="adaptation-symbol">VG</span><span class="adaptation-badge candidate" data-dashboard-copy="candidateShort">Candidate</span></span>
+            <strong data-dashboard-copy="garmentsTitle">Ventilated or cooling garments</strong>
+            <span data-dashboard-copy="garmentsText">Personal cooling through ventilated jackets, phase-change garments or cooling vests is relevant, but not separately parameterised here.</span>
+          </article>
+          <article class="adaptation-measure-card candidate-card">
+            <span class="adaptation-card-top"><span class="adaptation-symbol">WR</span><span class="adaptation-badge candidate" data-dashboard-copy="candidateShort">Candidate</span></span>
+            <strong data-dashboard-copy="organisationTitle">Work–rest and hydration protocols</strong>
+            <span data-dashboard-copy="organisationText">Scheduling, recovery breaks, hydration and heat-alert procedures are important organisational measures not separately estimated in the current outputs.</span>
+          </article>
+        </div>
+      </div>
       <div class="card prose compact">
         <p>Province exclusions selected in the Sector / ATECO5 explorer are also applied here, so spatial comparisons remain consistent.</p>
       </div>
@@ -147,7 +192,7 @@
         <div class="card"><div id="best-adaptation" class="plot small"></div></div>
       </div>
       <div class="card prose compact">
-        <p><strong>Dominant stand-alone measure:</strong> each province is assigned the individual measure with the largest avoided value-added share at the selected uptake. This is a descriptive comparison of stand-alone measures and is not an additive decomposition of the combined package.</p>
+        <p><strong>Dominant stand-alone measure:</strong> each province is assigned the individual measure with the largest avoided value-added share at the selected uptake. This is a descriptive comparison of stand-alone measures and is not an additive decomposition of the combined package. A modelled measure can be absent from the map legend when it is not the most effective option in any province under the current settings.</p>
       </div>
     </section>
 
