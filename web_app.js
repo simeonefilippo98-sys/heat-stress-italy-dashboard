@@ -54,6 +54,13 @@ const provinceName = x => ({
 }[String(x)] || String(x));
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+const nextFrame = () => new Promise(resolve => requestAnimationFrame(()=>resolve()));
+function setLoadingStage(message, progress) {
+  const status=$("loading-status"),bar=$("loading-progress"),meter=$("loading-meter");
+  if (status) status.textContent=message;
+  if (bar) bar.style.width=`${Math.max(0,Math.min(100,progress))}%`;
+  if (meter) meter.setAttribute("aria-valuenow",String(progress));
+}
 async function fetchResource(url, options={}) {
   let lastError;
   for (let attempt=1;attempt<=3;attempt++) {
@@ -76,10 +83,14 @@ async function ungzipJson(url) {
   if (typeof DecompressionStream!=="function") {
     throw new Error("This browser does not support gzip decompression. Please use a current version of Chrome, Edge, Firefox or Safari.");
   }
+  setLoadingStage("Downloading the compact validated dataset…",18);
   const response=await fetchResource(url);
   if (!response.body) throw new Error(`${url}: empty response body`);
   const stream=response.body.pipeThrough(new DecompressionStream("gzip"));
-  return JSON.parse(await new Response(stream).text());
+  const source=await new Response(stream).text();
+  setLoadingStage("Checking the analytical payload…",48);
+  await nextFrame();
+  return JSON.parse(source);
 }
 async function text(url) {
   const r = await fetchResource(url);
@@ -195,7 +206,7 @@ function synthesizeAgriculture(nonAgRows) {
 }
 
 async function loadAll() {
-  if ($("loading")) $("loading").textContent="Loading and validating dashboard data…";
+  setLoadingStage("Loading geography, adaptation and uncertainty data…",10);
   const [payload,g,ap,an,ai,rob] = await Promise.all([
     ungzipJson("/micro_compact_v1.json.gz"),
     json("/economic_geography_103_simplified.geojson"),
@@ -204,7 +215,11 @@ async function loadAll() {
     text("/ensemble_national_intensity_adaptation.csv"),
     json("/robustness.json"),
   ]);
+  setLoadingStage("Reconstructing 274,568 validated analytical rows…",68);
+  await nextFrame();
   const nonAg = decodeCompactPayload(payload);
+  setLoadingStage("Reconciling whole-economy coverage…",82);
+  await nextFrame();
   geo=g; adaptProv=parseCsvString(ap); adaptNat=parseCsvString(an); adaptInt=parseCsvString(ai); robustness=rob;
   micro=nonAg.concat(synthesizeAgriculture(nonAg));
 
@@ -343,7 +358,7 @@ function renderMicro() {
     {title:{text:"P1–P4 trajectory · full filtered sample",font:{size:16}},margin:{l:55,r:20,t:50,b:90},yaxis:{title:"VA loss intensity (%)"},plot_bgcolor:"#fff"},{responsive:true,displaylogo:false});
 
   const sorted=[...visible].sort((a,b)=>b.va_p-a.va_p);
-  $("province-table").innerHTML='<thead><tr><th>Province</th><th>VA loss (€m)</th><th>VA loss (%)</th><th>Workers lost</th><th>Worker loss (%)</th></tr></thead><tbody>'+sorted.map(x=>`<tr><td>${x.pn}</td><td>${fmt(x.va_m,1)}</td><td>${fmt(x.va_p,2)}</td><td>${fmt(x.w,0)}</td><td>${fmt(x.w_p,2)}</td></tr>`).join("")+"</tbody>";
+  $("province-table").innerHTML='<caption class="sr-only">Province-level occupational heat exposure results for the selected dashboard filters</caption><thead><tr><th scope="col">Province</th><th scope="col">VA loss (€m)</th><th scope="col">VA loss (%)</th><th scope="col">Workers lost</th><th scope="col">Worker loss (%)</th></tr></thead><tbody>'+sorted.map(x=>`<tr><th scope="row">${x.pn}</th><td>${fmt(x.va_m,1)}</td><td>${fmt(x.va_p,2)}</td><td>${fmt(x.w,0)}</td><td>${fmt(x.w_p,2)}</td></tr>`).join("")+"</tbody>";
 }
 function downloadProvinceCsv() {
   const prov=aggregateProvince(selectedRows()).filter(x=>!excludedProvinces.has(x.r)).sort((a,b)=>a.pn.localeCompare(b.pn));
@@ -372,7 +387,7 @@ function renderSector() {
     {title:{text:"Branch-specific VA loss intensity",font:{size:16}},xaxis:{title:"VA loss intensity (%)"},margin:{l:245,r:20,t:50,b:45},plot_bgcolor:"#fff"},{responsive:true,displaylogo:false});
   Plotly.react("sector-contribution",[{type:"bar",orientation:"h",x:byContribution.map(x=>x.contribution),y:byContribution.map(x=>`${x.b} · ${x.label}`),marker:{color:"#2c7fb8"}}],
     {title:{text:"Contribution to national VA loss",font:{size:16}},xaxis:{title:"Contribution (%)"},margin:{l:245,r:20,t:50,b:45},plot_bgcolor:"#fff"},{responsive:true,displaylogo:false});
-  $("sector-table").innerHTML='<thead><tr><th>Branch</th><th>VA loss (€bn)</th><th>VA loss intensity (%)</th><th>National contribution (%)</th><th>Worker loss intensity (%)</th></tr></thead><tbody>'+rows.map(x=>`<tr><td>${x.b} · ${x.label}</td><td>${fmt(x.l/1e9,3)}</td><td>${fmt(x.intensity,2)}</td><td>${fmt(x.contribution,2)}</td><td>${fmt(x.workersIntensity,2)}</td></tr>`).join("")+"</tbody>";
+  $("sector-table").innerHTML='<caption class="sr-only">National economic-branch occupational heat exposure results</caption><thead><tr><th scope="col">Branch</th><th scope="col">VA loss (€bn)</th><th scope="col">VA loss intensity (%)</th><th scope="col">National contribution (%)</th><th scope="col">Worker loss intensity (%)</th></tr></thead><tbody>'+rows.map(x=>`<tr><th scope="row">${x.b} · ${x.label}</th><td>${fmt(x.l/1e9,3)}</td><td>${fmt(x.intensity,2)}</td><td>${fmt(x.contribution,2)}</td><td>${fmt(x.workersIntensity,2)}</td></tr>`).join("")+"</tbody>";
 }
 
 function rebuildUptake() {
@@ -466,6 +481,7 @@ function bind() {
     if (btn.dataset.view==="sector") renderSector();
     if (btn.dataset.view==="adapt") renderAdapt();
     if (btn.dataset.view==="uncertainty") renderUncertainty();
+    requestAnimationFrame(()=>window.dashboardResizeVisiblePlots?.());
   }));
 
   ["period","branch","intensity","exposure"].forEach(id=>$(id).addEventListener("change",()=>{rebuildAteco();renderMicro();}));
@@ -485,19 +501,24 @@ function bind() {
 
 (async()=>{
   try {
-    await loadAll();initOptions();bind();
+    await loadAll();setLoadingStage("Preparing controls and visualisations…",92);await nextFrame();initOptions();bind();
     const requestedView=new URLSearchParams(location.search).get("view");
     const initialView=requestedView&&$(requestedView)&&document.querySelector(`.tab[data-view="${CSS.escape(requestedView)}"]`)?requestedView:"overview";
     document.querySelectorAll(".view").forEach(view=>view.classList.add("hidden"));
     $(initialView).classList.remove("hidden");
+    if (initialView==="micro") renderMicro();
+    if (initialView==="sector") renderSector();
+    if (initialView==="adapt") renderAdapt();
+    if (initialView==="uncertainty") renderUncertainty();
+    setLoadingStage("Ready",100);
+    $("loading").setAttribute("aria-busy","false");
     $("loading").classList.add("hidden");
-    renderMicro();
     document.dispatchEvent(new CustomEvent("dashboard:data-ready"));
   } catch(e) {
     $("loading").classList.add("hidden");
     const errorBox=$("error");errorBox.classList.remove("hidden");errorBox.replaceChildren();
     const message=document.createElement("p");message.textContent="The dashboard data could not be loaded. "+e.message;
     const retry=document.createElement("button");retry.type="button";retry.className="btn";retry.textContent="Retry loading";retry.onclick=()=>location.reload();
-    errorBox.append(message,retry);console.error(e);
+    errorBox.append(message,retry);errorBox.tabIndex=-1;errorBox.focus();console.error(e);
   }
 })();

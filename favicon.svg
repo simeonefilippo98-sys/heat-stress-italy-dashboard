@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Occupational heat dashboard">
+  <rect width="64" height="64" rx="14" fill="#172033"/>
+  <circle cx="44" cy="20" r="9" fill="#f59e0b"/>
+  <path d="M17 14v24.5a12 12 0 1 0 14 0V14a7 7 0 0 0-14 0Z" fill="#fff"/>
+  <path d="M22 18h4v24l2 1.5a7 7 0 1 1-8 0l2-1.5Z" fill="#ef4444"/>
+  <path d="M39 37h12M39 45h8" stroke="#60a5fa" stroke-width="4" stroke-linecap="round"/>
+</svg>

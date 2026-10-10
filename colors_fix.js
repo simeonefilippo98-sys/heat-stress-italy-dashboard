@@ -41,54 +41,27 @@
 })();
 
 
+// Load enhancement modules in a deterministic order. Their former independent
+// async loaders could initialise the navigation and research metadata in a
+// different order on slower connections.
 (() => {
-  const script = document.createElement("script");
-  script.src = "/climate_hazard.js";
-  script.async = true;
-  document.head.appendChild(script);
-})();
-
-(() => {
-  const script = document.createElement("script");
-  script.src = "/multiselect.js";
-  script.async = true;
-  document.head.appendChild(script);
-})();
-
-(() => {
-  const script = document.createElement("script");
-  script.src = "/methods_citations.js";
-  script.async = true;
-  document.head.appendChild(script);
-})();
-
-(() => {
-  const script = document.createElement("script");
-  script.src = "/paper1_rebrand.js";
-  script.async = true;
-  document.head.appendChild(script);
-})();
-
-(() => {
-  const script = document.createElement("script");
-  script.src = "/activity_semantics_fix.js";
-  script.async = true;
-  document.head.appendChild(script);
-})();
-
-(() => {
-  const script = document.createElement("script");
-  script.src = "/linked_chart_interactions.js";
-  script.async = true;
-  document.head.appendChild(script);
-})();
-
-// Lightweight Scenario Lab launcher only. The actual Scenario Lab code is loaded
-// on first click and then builds compact cached indices in small idle-time chunks.
-// This avoids the continuous full-microdata scans that caused high CPU usage.
-(() => {
-  const script = document.createElement("script");
-  script.src = "/scenario_lab_launcher.js";
-  script.async = true;
-  document.head.appendChild(script);
+  const modules = [
+    "/climate_hazard.js",
+    "/multiselect.js",
+    "/methods_citations.js",
+    "/paper1_rebrand.js",
+    "/activity_semantics_fix.js",
+    "/linked_chart_interactions.js",
+    "/scenario_lab_launcher.js",
+  ];
+  const load = src => new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = `${src}?v=1.3.0`;
+    script.onload = resolve;
+    script.onerror = () => reject(new Error(`Dashboard module failed to load: ${src}`));
+    document.head.appendChild(script);
+  });
+  (async () => {
+    for (const src of modules) await load(src);
+  })().catch(error => console.error("Dashboard enhancement loading failed", error));
 })();

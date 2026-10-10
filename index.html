@@ -11,12 +11,18 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://heat-stress-italy-dashboard.vercel.app/" />
   <meta name="theme-color" content="#172033" />
-  <link rel="stylesheet" href="/styles.css" />
-  <script src="/vendor/plotly-2.35.2.min.js"></script>
-  <script src="/vendor/papaparse-5.4.1.min.js"></script>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preload" href="/micro_compact_v1.json.gz" as="fetch" type="application/gzip" />
+  <link rel="stylesheet" href="/styles.css?v=1.3.0" />
+  <script defer src="/vendor/plotly-2.35.2.min.js"></script>
+  <script defer src="/vendor/papaparse-5.4.1.min.js"></script>
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"Dataset","name":"Occupational Heat & Economic Exposure in Italy","description":"Interactive research companion covering projected occupational heat, productivity exposure and adaptation across 103 harmonised Italian territorial units and 821 observed ATECO5 activities.","creator":{"@type":"Person","name":"Filippo Simeone"},"temporalCoverage":"2006/2099","spatialCoverage":{"@type":"Country","name":"Italy"},"url":"https://heat-stress-italy-dashboard.vercel.app/","isBasedOn":"From climate hazard to economic exposure"}
+  </script>
 </head>
 <body>
-  <main class="shell">
+  <a class="skip-link" href="#dashboard-content">Skip to dashboard content</a>
+  <main class="shell" id="dashboard-content" tabindex="-1">
     <header>
       <h1>Occupational Heat &amp; Economic Exposure in Italy</h1>
       <p>Interactive companion to “From climate hazard to economic exposure” · 103 harmonised Italian territorial units · 821 observed ATECO5 activities + agriculture aggregate · P1–P4 · adaptation &amp; uncertainty</p>
@@ -30,8 +36,16 @@
       <button type="button" class="tab" data-view="notes">Data notes</button>
     </nav>
 
-    <section id="loading" class="card">Loading dashboard data…</section>
-    <section id="error" class="card error hidden"></section>
+    <section id="loading" class="card loading-card" role="status" aria-live="polite" aria-busy="true">
+      <span class="loading-spinner" aria-hidden="true"></span>
+      <div class="loading-copy">
+        <strong>Preparing the research companion</strong>
+        <span id="loading-status">Starting the dashboard…</span>
+        <div id="loading-meter" class="loading-meter" role="progressbar" aria-label="Dashboard loading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="5"><span id="loading-progress"></span></div>
+        <small>The first visit loads the validated analytical dataset; subsequent visits use the browser cache.</small>
+      </div>
+    </section>
+    <section id="error" class="card error hidden" role="alert" aria-live="assertive"></section>
 
     <section id="micro" class="view hidden">
       <div class="filters card">
@@ -91,7 +105,7 @@
           <h3>Visible province table</h3>
           <button id="download-csv" class="btn">Download filtered CSV</button>
         </div>
-        <div class="table-wrap"><table id="province-table"></table></div>
+        <div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable province results table"><table id="province-table"></table></div>
       </div>
     </section>
 
@@ -113,7 +127,7 @@
       </div>
       <div class="card table-card">
         <h3>National branch profile</h3>
-        <div class="table-wrap"><table id="sector-table"></table></div>
+        <div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable national branch results table"><table id="sector-table"></table></div>
       </div>
     </section>
 
@@ -227,9 +241,9 @@
       </div>
     </section>
   </main>
-  <script src="/colors_fix.js"></script>
-  <script src="/web_app.js"></script>
-  <script src="/workforce.js"></script>
-  <script src="/dashboard_v2.js"></script>
+  <script defer src="/colors_fix.js?v=1.3.0"></script>
+  <script defer src="/web_app.js?v=1.3.0"></script>
+  <script defer src="/workforce.js"></script>
+  <script defer src="/dashboard_v2.js?v=1.3.0"></script>
 </body>
 </html>

@@ -120,24 +120,10 @@
     enhance(branch, 5, "Economic branch");
     enhance(ateco, 7, "Activity");
 
-    branch.addEventListener("change", () => {
-      ensureAllState(branch);
-      rebuildAteco();
-      renderMicro();
-    });
-    ateco.addEventListener("change", () => {
-      ensureAllState(ateco);
-      renderMicro();
-    });
-
-    ["period","intensity","exposure"].forEach(id => {
-      document.getElementById(id)?.addEventListener("change", () => {
-        setTimeout(() => { rebuildAteco(); renderMicro(); }, 0);
-      });
-    });
-
+    // web_app.js owns the change listeners. The enhanced selects dispatch the
+    // same native change event, avoiding duplicate rebuilds and Plotly renders.
     rebuildAteco();
-    renderMicro();
+    if (!document.getElementById("micro")?.classList.contains("hidden")) renderMicro();
     console.info("Multi-select filters enabled", {
       branches: vals(branch), activities: vals(ateco),
       aggregation: "sum VA/workers/losses first, then recompute intensity"

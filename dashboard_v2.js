@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "1.2.0";
+  const VERSION = "1.3.0";
   const UPDATED = "10 October 2026";
   const PAPER_TITLE = "From climate hazard to economic exposure: occupational heat, productivity losses and adaptation across 103 harmonised Italian territorial units and 821 observed ATECO5 activities";
   const PERIOD_SHORT = ["P1", "P2", "P3", "P4"];
@@ -28,7 +28,7 @@
       pipeline:"From climate to economic exposure", pipelineNote:"The dashboard follows the same auditable sequence used by the manuscript and Supplementary Information.",
       cautionTitle:"Interpretation:", caution:"modelled annual-equivalent productive-capacity exposure under a fixed 2018–2023 economic structure. It is not a causal estimate of realised GDP loss or layoffs.",
       summaryLanguage:"Sintesi italiana", copyLink:"Copy current view", copied:"Link copied", expand:"Expand map", close:"Close map", loading:"Preparing the national overview…",
-      version:"Dashboard version", updated:"Last updated", dataset:"Analytical coverage", reproducibility:"Reproducibility", repo:"GitHub source", archive:"Zenodo archive planned",
+      version:"Dashboard version", updated:"Last updated", dataset:"Analytical coverage", reproducibility:"Reproducibility", repo:"GitHub source", archive:"Zenodo archive planned", chooseView:"Choose a dashboard view", validated:"Validated data", validationShort:"274,568 source rows · exact match", validationLong:"Exact source-to-payload verification",
       catalogKicker:"Adaptation measure catalogue", catalogTitle:"What the dashboard models — and what remains a candidate option", catalogText:"Select a modelled measure to update the results below. Candidate measures are shown for policy completeness but do not have a separate effect estimate in the current outputs.",
       statusModelled:"Modelled in the dashboard", statusCandidate:"Candidate · not separately modelled", modelledShort:"Modelled", candidateShort:"Candidate",
       shadeTitle:"Shade and solar protection", shadeText:"Covered work areas and solar shielding reduce direct radiant-heat exposure for outdoor activities.",
@@ -52,7 +52,7 @@
       pipeline:"Dal clima all’esposizione economica", pipelineNote:"Il dashboard segue la stessa sequenza verificabile utilizzata nel manoscritto e nel Supplementary Information.",
       cautionTitle:"Interpretazione:", caution:"esposizione modellata e annuale-equivalente della capacità produttiva con struttura economica 2018–2023 fissa. Non è una stima causale della perdita di PIL realizzata né dei licenziamenti.",
       summaryLanguage:"English summary", copyLink:"Copia vista corrente", copied:"Link copiato", expand:"Ingrandisci mappa", close:"Chiudi mappa", loading:"Preparazione della panoramica nazionale…",
-      version:"Versione dashboard", updated:"Ultimo aggiornamento", dataset:"Copertura analitica", reproducibility:"Riproducibilità", repo:"Codice GitHub", archive:"Archivio Zenodo previsto",
+      version:"Versione dashboard", updated:"Ultimo aggiornamento", dataset:"Copertura analitica", reproducibility:"Riproducibilità", repo:"Codice GitHub", archive:"Archivio Zenodo previsto", chooseView:"Scegli una vista del dashboard", validated:"Dati verificati", validationShort:"274.568 righe sorgente · corrispondenza esatta", validationLong:"Verifica esatta tra fonti e payload",
       catalogKicker:"Catalogo delle misure di adattamento", catalogTitle:"Cosa simula il dashboard — e cosa resta un’opzione candidata", catalogText:"Seleziona una misura simulata per aggiornare i risultati sottostanti. Le opzioni candidate sono mostrate per completezza di policy, ma non dispongono di una stima d’effetto separata negli output attuali.",
       statusModelled:"Simulato nel dashboard", statusCandidate:"Opzione candidata · non simulata separatamente", modelledShort:"Simulato", candidateShort:"Candidato",
       shadeTitle:"Ombreggiamento e protezione solare", shadeText:"Aree di lavoro coperte e schermature solari riducono l’esposizione diretta al calore radiante nelle attività all’aperto.",
@@ -113,6 +113,7 @@
       const map=document.getElementById("overview-map"),trend=document.getElementById("overview-trend");
       if(map?.data)Plotly.purge(map);if(trend?.data)Plotly.purge(trend);renderOverview();
     });
+    syncNavigationAccessibility();scheduleVisiblePlotResize();
     updateUrl(id);
     window.scrollTo({top:0,behavior:"smooth"});
   }
@@ -179,6 +180,8 @@
     const strip = document.getElementById("interpretation-strip");
     if (strip) strip.innerHTML = `<strong>${t("cautionTitle")}</strong><span>${t("caution")}</span>`;
     const lang = document.getElementById("language-toggle"); if(lang) lang.textContent=t("summaryLanguage");
+    const validation=document.getElementById("validation-link");if(validation){validation.textContent=`✓ ${t("validationShort")}`;validation.setAttribute("aria-label",`${t("validated")}: ${t("validationShort")}`);}
+    const pickerLabel=document.getElementById("view-picker-label");if(pickerLabel)pickerLabel.textContent=t("chooseView");
     const copyButton = document.getElementById("copy-view-link"); if(copyButton) copyButton.textContent=t("copyLink");
     translateChrome();
   }
@@ -224,16 +227,90 @@
     const header = document.querySelector("main.shell > header");
     if (header && !document.getElementById("site-tools")) {
       const tools = document.createElement("div"); tools.id="site-tools"; tools.className="site-tools";
-      tools.innerHTML=`<button id="language-toggle" class="tool-btn" type="button"></button><button id="copy-view-link" class="tool-btn" type="button"></button>`;
+      tools.innerHTML=`<button id="language-toggle" class="tool-btn" type="button"></button><button id="copy-view-link" class="tool-btn" type="button"></button><a id="validation-link" class="validation-pill" href="https://github.com/simeonefilippo98-sys/heat-stress-italy-dashboard/blob/main/tools/verify_compact_payload.py" target="_blank" rel="noopener"></a>`;
       header.appendChild(tools);
-      document.getElementById("language-toggle").onclick=()=>{language=language==="en"?"it":"en";localStorage.setItem("heat-dashboard-language",language);document.querySelector(".version-grid")?.remove();renderOverview();renderNarrative();enhanceFooter();};
+      document.getElementById("language-toggle").onclick=()=>{language=language==="en"?"it":"en";localStorage.setItem("heat-dashboard-language",language);document.querySelector(".version-grid")?.remove();renderOverview();renderNarrative();translateChrome();syncNavigationAccessibility();enhanceFooter();};
       document.getElementById("copy-view-link").onclick=async event=>{updateUrl(activeView());try{await navigator.clipboard.writeText(location.href);event.currentTarget.textContent=t("copied");setTimeout(()=>event.currentTarget.textContent=t("copyLink"),1200);}catch(error){console.warn("Current-view link could not be copied",error);}};
     }
     const nav=document.querySelector("nav.tabs");
     if(nav&&!document.getElementById("interpretation-strip")){const strip=document.createElement("div");strip.id="interpretation-strip";strip.className="interpretation-strip";nav.insertAdjacentElement("afterend",strip);}
+    ensureViewPicker();
   }
 
   function activeView() { return document.querySelector(".tab.active")?.dataset.view || "overview"; }
+
+  function scheduleVisiblePlotResize() {
+    clearTimeout(scheduleVisiblePlotResize.timer);
+    scheduleVisiblePlotResize.timer=setTimeout(()=>{
+      const panel=document.querySelector(".view:not(.hidden)");
+      if(!panel||!window.Plotly?.Plots?.resize)return;
+      panel.querySelectorAll(".js-plotly-plot").forEach(plot=>{
+        try{Plotly.Plots.resize(plot);}catch(error){console.warn("Plot resize skipped",error);}
+      });
+      labelPlots();
+    },60);
+  }
+  window.dashboardResizeVisiblePlots=scheduleVisiblePlotResize;
+
+  function labelPlots() {
+    const fallback={
+      "overview-map":"Map of provincial value-added loss intensity","overview-trend":"National value-added exposure trajectory from P1 to P4",
+      map:"Province outcome map",rank:"Ranking of the top visible provinces",trend:"P1 to P4 filtered trajectory",
+      "sector-intensity":"Economic-branch loss intensity chart","sector-contribution":"Economic-branch contribution chart",
+      amap:"Provincial adaptation benefit map",aint:"Adaptation benefit by work intensity","best-adaptation":"Most effective stand-alone adaptation measure by province",
+      "uncertainty-main":"Climate-model dispersion chart","robustness-bar":"Methodological robustness chart",
+      "hz-map":"Climate hazard map","hz-rank":"Province climate hazard ranking","hz-profile":"Climate hazard profile across P1 to P4","wf-map":"Workforce composition map"
+    };
+    document.querySelectorAll(".js-plotly-plot").forEach(plot=>{
+      const title=plot.layout?.title?.text||plot._fullLayout?.title?.text||"";
+      const clean=String(title).replace(/<[^>]*>/g,"").trim();
+      const accessibleTitle=!clean||/^click to enter plot title$/i.test(clean)?(fallback[plot.id]||"Interactive scientific chart"):clean;
+      plot.setAttribute("role","img");plot.setAttribute("aria-label",accessibleTitle);plot.tabIndex=0;
+      if(plot.id==="map")plot.setAttribute("aria-describedby","scale-note visible-note");
+    });
+  }
+
+  function ensureViewPicker() {
+    const nav=document.querySelector("nav.tabs");if(!nav)return;
+    let picker=document.getElementById("view-picker");
+    if(!picker){
+      picker=document.createElement("div");picker.id="view-picker";picker.className="view-picker";
+      picker.innerHTML=`<label for="view-picker-select"><span id="view-picker-label"></span><select id="view-picker-select"></select></label>`;
+      nav.insertAdjacentElement("beforebegin",picker);
+      document.getElementById("view-picker-select").addEventListener("change",event=>{
+        document.querySelector(`.tab[data-view="${CSS.escape(event.target.value)}"]`)?.click();
+      });
+    }
+    const label=document.getElementById("view-picker-label");if(label)label.textContent=t("chooseView");
+  }
+
+  function syncNavigationAccessibility() {
+    const nav=document.querySelector("nav.tabs");if(!nav)return;
+    ensureViewPicker();nav.setAttribute("role","tablist");nav.setAttribute("aria-orientation","horizontal");
+    const buttons=[...nav.querySelectorAll(".tab[data-view]")],active=buttons.find(button=>button.classList.contains("active"))||buttons[0];
+    buttons.forEach(button=>{
+      const view=button.dataset.view,id=`tab-${view.replace(/[^a-z0-9_-]/gi,"-")}`,selected=button===active;
+      button.id=id;button.setAttribute("role","tab");button.setAttribute("aria-controls",view);button.setAttribute("aria-selected",String(selected));button.tabIndex=selected?0:-1;
+      const panel=document.getElementById(view);if(panel){panel.setAttribute("role","tabpanel");panel.setAttribute("aria-labelledby",id);panel.setAttribute("aria-hidden",String(!selected));}
+      if(!button.dataset.accessibilityWired){button.dataset.accessibilityWired="1";button.addEventListener("click",()=>{setTimeout(()=>{syncNavigationAccessibility();scheduleVisiblePlotResize();},0);setTimeout(()=>{scheduleVisiblePlotResize();labelPlots();},400);});}
+    });
+    const picker=document.getElementById("view-picker-select");
+    if(picker){
+      const signature=buttons.map(button=>`${button.dataset.view}:${button.textContent.trim()}`).join("|");
+      if(picker.dataset.signature!==signature){picker.replaceChildren(...buttons.map(button=>new Option(button.textContent.trim(),button.dataset.view)));picker.dataset.signature=signature;}
+      if(active)picker.value=active.dataset.view;
+    }
+    if(!nav.dataset.keyboardWired){
+      nav.dataset.keyboardWired="1";
+      nav.addEventListener("keydown",event=>{
+        if(!["ArrowLeft","ArrowRight","Home","End"].includes(event.key)||!event.target.matches('.tab[role="tab"]'))return;
+        event.preventDefault();const tabs=[...nav.querySelectorAll('.tab[role="tab"]')],current=tabs.indexOf(event.target);let next=current;
+        if(event.key==="ArrowRight")next=(current+1)%tabs.length;if(event.key==="ArrowLeft")next=(current-1+tabs.length)%tabs.length;if(event.key==="Home")next=0;if(event.key==="End")next=tabs.length-1;
+        tabs[next].focus();tabs[next].click();
+      });
+    }
+  }
+
   function updateUrl(view=activeView()) {
     const url=new URL(location.href); url.searchParams.set("view",view);
     if(view==="overview")url.searchParams.set("period",PERIOD_SHORT[overviewPeriod].toLowerCase());
@@ -264,7 +341,8 @@
       if(!head){head=document.createElement("div");head.className="card-head";card.insertBefore(head,card.firstChild);}
       let actions=head.querySelector(".map-action-group"); if(!actions){actions=document.createElement("div");actions.className="map-action-group";head.appendChild(actions);}
       const button=document.createElement("button");button.type="button";button.className="expand-map-btn";button.textContent=t("expand");button.setAttribute("aria-expanded","false");actions.appendChild(button);
-      button.onclick=()=>{const expanded=card.classList.toggle("map-expanded");document.body.classList.toggle("has-expanded-map",expanded);button.setAttribute("aria-expanded",String(expanded));button.textContent=expanded?t("close"):t("expand");setTimeout(()=>{try{Plotly.Plots.resize(plot);}catch(_){}},80);};
+      button.onclick=()=>{const expanded=card.classList.toggle("map-expanded");document.body.classList.toggle("has-expanded-map",expanded);button.setAttribute("aria-expanded",String(expanded));button.textContent=expanded?t("close"):t("expand");if(expanded){card.setAttribute("role","dialog");card.setAttribute("aria-modal","true");card.setAttribute("aria-label",plot.getAttribute("aria-label")||t("expand"));button.focus();}else{card.removeAttribute("role");card.removeAttribute("aria-modal");button.focus();}setTimeout(()=>{try{Plotly.Plots.resize(plot);}catch(_){}},80);};
+      card.addEventListener("keydown",event=>{if(event.key==="Escape"&&card.classList.contains("map-expanded")){event.preventDefault();button.click();}});
     });
   }
 
@@ -286,21 +364,23 @@
 
   function enhanceFooter() {
     const footer=document.getElementById("site-footer");if(!footer||footer.querySelector(".version-grid"))return;
-    const grid=document.createElement("div");grid.className="version-grid";grid.innerHTML=`<div class="version-item"><span>${t("version")}</span><strong>${VERSION}</strong></div><div class="version-item"><span>${t("updated")}</span><strong>${UPDATED}</strong></div><div class="version-item"><span>${t("dataset")}</span><strong>P1–P4 · 103 units · 821 ATECO5</strong></div><div class="version-item"><span>${t("reproducibility")}</span><strong><a href="https://github.com/simeonefilippo98-sys/heat-stress-italy-dashboard" target="_blank" rel="noopener">${t("repo")}</a> · ${t("archive")}</strong></div>`;footer.appendChild(grid);
+    const grid=document.createElement("div");grid.className="version-grid";grid.innerHTML=`<div class="version-item"><span>${t("version")}</span><strong>${VERSION}</strong></div><div class="version-item"><span>${t("updated")}</span><strong>${UPDATED}</strong></div><div class="version-item"><span>${t("dataset")}</span><strong>P1–P4 · 103 units · 821 ATECO5</strong></div><div class="version-item"><span>${t("validated")}</span><strong><a href="https://github.com/simeonefilippo98-sys/heat-stress-italy-dashboard/blob/main/tools/verify_compact_payload.py" target="_blank" rel="noopener">${t("validationLong")}</a></strong></div><div class="version-item"><span>${t("reproducibility")}</span><strong><a href="https://github.com/simeonefilippo98-sys/heat-stress-italy-dashboard" target="_blank" rel="noopener">${t("repo")}</a> · ${t("archive")}</strong></div>`;footer.appendChild(grid);
   }
 
   function observeDynamicModules() {
-    const observer=new MutationObserver(()=>{clearTimeout(mutationTimer);mutationTimer=setTimeout(()=>{translateChrome();installExpandButtons();enhanceFooter();},80);});
+    const observer=new MutationObserver(()=>{clearTimeout(mutationTimer);mutationTimer=setTimeout(()=>{translateChrome();installExpandButtons();enhanceFooter();syncNavigationAccessibility();labelPlots();setTimeout(labelPlots,300);},80);});
     observer.observe(document.body,{childList:true,subtree:true});
   }
 
   function init() {
-    addOverview();addGlobalTools();renderNarrative();observeDynamicModules();
+    addOverview();addGlobalTools();renderNarrative();syncNavigationAccessibility();observeDynamicModules();
+    window.addEventListener("resize",scheduleVisiblePlotResize,{passive:true});
+    if(typeof ResizeObserver==="function")new ResizeObserver(scheduleVisiblePlotResize).observe(document.querySelector("main.shell"));
     let attempts=0;
     const timer=setInterval(()=>{
-      addGlobalTools();installExpandButtons();enhanceFooter();translateChrome();
+      addGlobalTools();installExpandButtons();enhanceFooter();translateChrome();syncNavigationAccessibility();labelPlots();
       if(isReady()){
-        clearInterval(timer);requestAnimationFrame(applyUrlState);console.info("Dashboard 1.1 enhancements loaded",{version:VERSION,language,paper:PAPER_TITLE});
+        clearInterval(timer);requestAnimationFrame(applyUrlState);console.info("Dashboard enhancements loaded",{version:VERSION,language,paper:PAPER_TITLE});
       } else if(++attempts>240){clearInterval(timer);const section=document.getElementById("overview");if(section)section.innerHTML=`<div class="card overview-error">The national overview could not initialise. The analytical views remain available.</div>`;}
     },100);
   }
