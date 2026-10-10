@@ -1,8 +1,8 @@
 (() => {
   "use strict";
 
-  const VERSION = "1.1.1";
-  const UPDATED = "22 August 2026";
+  const VERSION = "1.2.0";
+  const UPDATED = "10 October 2026";
   const PAPER_TITLE = "From climate hazard to economic exposure: occupational heat, productivity losses and adaptation across 103 harmonised Italian territorial units and 821 observed ATECO5 activities";
   const PERIOD_SHORT = ["P1", "P2", "P3", "P4"];
   const PERIOD_DATES = ["2006–2025", "2026–2050", "2051–2075", "2076–2099"];
@@ -300,7 +300,7 @@
     const timer=setInterval(()=>{
       addGlobalTools();installExpandButtons();enhanceFooter();translateChrome();
       if(isReady()){
-        clearInterval(timer);setTimeout(applyUrlState,450);console.info("Dashboard 1.1 enhancements loaded",{version:VERSION,language,paper:PAPER_TITLE});
+        clearInterval(timer);requestAnimationFrame(applyUrlState);console.info("Dashboard 1.1 enhancements loaded",{version:VERSION,language,paper:PAPER_TITLE});
       } else if(++attempts>240){clearInterval(timer);const section=document.getElementById("overview");if(section)section.innerHTML=`<div class="card overview-error">The national overview could not initialise. The analytical views remain available.</div>`;}
     },100);
   }

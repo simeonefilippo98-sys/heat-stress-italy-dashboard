@@ -29,6 +29,8 @@ The research companion supports interactive exploration of:
 
 Version 1.1 adds a national **At a glance** entry point, P1–P4 headline indicators, a direct map-to-province research-profile workflow, Italian/English summary navigation, shareable URL state, full-screen map controls, a persistent interpretation warning and an explicit version/reproducibility panel. Version 1.1.1 also defers the overview map until its panel is visible and adds an adaptation catalogue that distinguishes the four modelled scenarios from policy-relevant candidate measures that are not separately parameterised. All choropleths are therefore sized from a visible container rather than initialised inside hidden tabs.
 
+Version 1.2 improves delivery reliability without changing the scientific model or its outputs. The browser now downloads one codebook-compressed microdata payload (about 18 MB instead of two archives totalling about 36 MB), reconstructs the same 274,568 analytical rows locally, loads Plotly and Papa Parse from repository-pinned copies, retries transient requests and provides an explicit recovery action if loading fails. A deterministic build script in `tools/build_compact_payload.py` regenerates the transport payload from the two validated source archives.
+
 Equivalent workers lost represent annual-equivalent productive capacity, not predicted layoffs. Value-added losses are first-order accounting exposures, not causal GDP, welfare or general-equilibrium forecasts.
 
 ## Economic and activity coverage

@@ -53,20 +53,40 @@ const provinceName = x => ({
   "Massa Carrara":"Massa-Carrara"
 }[String(x)] || String(x));
 
-async function ungzipText(url) {
-  const r = await fetch(url);
-  if (!r.ok) throw new Error(`${url}: ${r.status}`);
-  const ds = new DecompressionStream("gzip");
-  return new Response(r.body.pipeThrough(ds)).text();
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+async function fetchResource(url, options={}) {
+  let lastError;
+  for (let attempt=1;attempt<=3;attempt++) {
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),60000);
+    try {
+      const response=await fetch(url,{cache:"force-cache",...options,signal:controller.signal});
+      if (!response.ok) throw new Error(`${url}: HTTP ${response.status}`);
+      return response;
+    } catch (error) {
+      lastError=error;
+      if (attempt<3) await wait(350*Math.pow(2,attempt-1));
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+  throw new Error(`${url} could not be loaded after three attempts: ${lastError?.message||lastError}`);
+}
+async function ungzipJson(url) {
+  if (typeof DecompressionStream!=="function") {
+    throw new Error("This browser does not support gzip decompression. Please use a current version of Chrome, Edge, Firefox or Safari.");
+  }
+  const response=await fetchResource(url);
+  if (!response.body) throw new Error(`${url}: empty response body`);
+  const stream=response.body.pipeThrough(new DecompressionStream("gzip"));
+  return JSON.parse(await new Response(stream).text());
 }
 async function text(url) {
-  const r = await fetch(url);
-  if (!r.ok) throw new Error(`${url}: ${r.status}`);
+  const r = await fetchResource(url);
   return r.text();
 }
 async function json(url) {
-  const r = await fetch(url);
-  if (!r.ok) throw new Error(`${url}: ${r.status}`);
+  const r = await fetchResource(url);
   return r.json();
 }
 function parseCsvString(s) {
@@ -115,6 +135,24 @@ function compactRow(x) {
   };
 }
 
+function decodeCompactPayload(payload) {
+  if (!payload || payload.version!==1 || !Array.isArray(payload.rows)) {
+    throw new Error("The compact microdata payload has an unsupported schema.");
+  }
+  const books=payload.codebooks||{};
+  const periods=books.periods||[],provinces=books.provinces||[],activities=books.activities||[],branches=books.branches||[],intensities=books.work_intensities||[];
+  return payload.rows.map(row=>{
+    const period=periods[row[0]],province=provinces[row[1]],activity=activities[row[2]],branch=branches[row[3]];
+    if (!period||!province||!activity||!branch) throw new Error("The compact microdata payload contains an invalid codebook reference.");
+    return {
+      r:String(province[0]),pn:provinceName(province[1]),s:String(activity[0]),sd:activity[1],b:String(branch[0]),bd:branch[1],
+      wi:intensities[row[4]],o:num(row[5]),p:period[0],pl:period[1],va:num(row[6]),n:num(row[7]),lo:num(row[8]),
+      l0:num(row[9]),w0:num(row[10]),l50:num(row[11]),w50:num(row[12]),a50:num(row[13]),
+      l75:num(row[14]),w75:num(row[15]),a75:num(row[16]),level:"ATECO5",
+    };
+  });
+}
+
 function synthesizeAgriculture(nonAgRows) {
   const g = new Map();
   for (const x of nonAgRows) {
@@ -157,16 +195,16 @@ function synthesizeAgriculture(nonAgRows) {
 }
 
 async function loadAll() {
-  const [p1,p2,g,ap,an,ai,rob] = await Promise.all([
-    ungzipText("/ATECO5_province_P1_P4_micro_results_part1.csv.gz"),
-    ungzipText("/ATECO5_province_P1_P4_micro_results_part2.csv.gz"),
+  if ($("loading")) $("loading").textContent="Loading and validating dashboard data…";
+  const [payload,g,ap,an,ai,rob] = await Promise.all([
+    ungzipJson("/micro_compact_v1.json.gz"),
     json("/economic_geography_103_simplified.geojson"),
     text("/ensemble_province_adaptation_losses.csv"),
     text("/ensemble_national_adaptation_losses.csv"),
     text("/ensemble_national_intensity_adaptation.csv"),
     json("/robustness.json"),
   ]);
-  const nonAg = parseCsvString(p1).concat(parseCsvString(p2)).map(compactRow);
+  const nonAg = decodeCompactPayload(payload);
   geo=g; adaptProv=parseCsvString(ap); adaptNat=parseCsvString(an); adaptInt=parseCsvString(ai); robustness=rob;
   micro=nonAg.concat(synthesizeAgriculture(nonAg));
 
@@ -447,8 +485,19 @@ function bind() {
 
 (async()=>{
   try {
-    await loadAll();initOptions();bind();$("loading").classList.add("hidden");$("micro").classList.remove("hidden");renderMicro();
+    await loadAll();initOptions();bind();
+    const requestedView=new URLSearchParams(location.search).get("view");
+    const initialView=requestedView&&$(requestedView)&&document.querySelector(`.tab[data-view="${CSS.escape(requestedView)}"]`)?requestedView:"overview";
+    document.querySelectorAll(".view").forEach(view=>view.classList.add("hidden"));
+    $(initialView).classList.remove("hidden");
+    $("loading").classList.add("hidden");
+    renderMicro();
+    document.dispatchEvent(new CustomEvent("dashboard:data-ready"));
   } catch(e) {
-    $("loading").classList.add("hidden");$("error").classList.remove("hidden");$("error").textContent="Failed to load dashboard: "+e.message;console.error(e);
+    $("loading").classList.add("hidden");
+    const errorBox=$("error");errorBox.classList.remove("hidden");errorBox.replaceChildren();
+    const message=document.createElement("p");message.textContent="The dashboard data could not be loaded. "+e.message;
+    const retry=document.createElement("button");retry.type="button";retry.className="btn";retry.textContent="Retry loading";retry.onclick=()=>location.reload();
+    errorBox.append(message,retry);console.error(e);
   }
 })();
